@@ -1,20 +1,44 @@
-# Dependencies
+# Dependencies (restore with `pnpm install`)
 node_modules/
+.pnpm-store/
 
-# Build output (pnpm build)
+# Build output and tool caches (pnpm build / vite)
 dist/
+dist-ssr/
+.vite/
+*.tsbuildinfo
 
-# Generated analysis artifacts
+# Generated analysis artifacts (graphify)
 graphify-out/
 
-# Local / personal
+# Vendored agent skills — licensed, not redistributable.
+# Restore from skills-lock.json. Project rules in .agents/rules/ stay tracked.
+.agents/skills/
+
+# Secrets and local environment
 .env
 .env.*
+!.env.example
+*.pem
+*.key
+
+# Personal agent files
 CLAUDE.local.md
 MEMORY.md
 .claude/settings.local.json
 
-# OS / editor
+# Editors
+.vscode/*
+!.vscode/extensions.json
+.idea/
+*.swp
+
+# OS
 .DS_Store
 Thumbs.db
+desktop.ini
+
+# Logs
 *.log
+npm-debug.log*
+pnpm-debug.log*
