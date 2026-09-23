@@ -26,4 +26,4 @@ There is no test framework or coverage target. Run `pnpm build` after changes an
 
 ## Commit & Pull Request Guidelines
 
-This workspace has no accessible Git history, so no existing commit-message convention can be verified. Use short, imperative subjects that identify the change, such as `Fix slide navigation at deck bounds`. Pull requests should describe the affected slides or controls, include the verification performed, link a related issue when one exists, and provide screenshots for visible changes. Keep generated output separate from source changes.
+Use Conventional Commits with short subjects that identify the change, such as `fix: stop slide navigation at deck bounds`. Pull requests should describe the affected slides or controls, include the verification performed, link a related issue when one exists, and provide screenshots for visible changes. Keep generated output separate from source changes.

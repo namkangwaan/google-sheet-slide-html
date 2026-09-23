@@ -13,7 +13,7 @@ Use `pnpm` (`pnpm-lock.yaml`). There is no linter, formatter, or unit-test frame
 - `pnpm practice:build` — regenerate practice outputs (see pipeline below); run `check:practice` right after
 - `pnpm dev` — visual/interaction check (`.claude/launch.json` has a `dev` config on port 5173)
 
-The folder is not a git repo, so deletions can't be undone — prefer moving files to the Recycle Bin.
+Git remote: `github.com/namkangwaan/google-sheet-slide-html` (private, branch `main`). `dist/` and `graphify-out/` are gitignored.
 
 ## Architecture
 
