@@ -8,6 +8,7 @@
 ![Vite](https://img.shields.io/badge/Vite-5-646CFF?logo=vite&logoColor=white)
 ![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-3-06B6D4?logo=tailwindcss&logoColor=white)
 ![pnpm](https://img.shields.io/badge/pnpm-11-F69220?logo=pnpm&logoColor=white)
+[![License: CC BY-NC-SA 4.0](https://img.shields.io/badge/License-CC_BY--NC--SA_4.0-lightgrey.svg)](LICENSE)
 
 **[เปิดบทเรียน](https://namkangwaan.github.io/google-sheet-slide-html/)** ·
 **[ดาวน์โหลดแบบฝึก (.xlsx)](https://namkangwaan.github.io/google-sheet-slide-html/Google_Sheets_Mastery_Practice.xlsx)** ·
@@ -183,4 +184,19 @@ flowchart LR
 
 ## ใบอนุญาต (License)
 
-ยังไม่ได้เลือกใบอนุญาต ลิขสิทธิ์ทั้งหมดจึงยังเป็นของผู้เขียน ถ้าต้องการนำไปใช้ซ้ำหรือดัดแปลง กรุณาเปิด issue เพื่อขออนุญาตก่อน
+เผยแพร่ภายใต้ [Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International (CC BY-NC-SA 4.0)](https://creativecommons.org/licenses/by-nc-sa/4.0/deed.th) อ่านข้อความเต็มได้ที่ [`LICENSE`](LICENSE)
+
+ครูและผู้เรียนคัดลอก แจกจ่าย และดัดแปลงสื่อนี้ได้ โดยมีเงื่อนไข 3 ข้อ:
+
+- **BY:** ระบุที่มา พร้อมลิงก์กลับมาที่ repo นี้
+- **NC:** ห้ามใช้เพื่อการค้า เช่น ขายเป็นคอร์สหรือขายไฟล์
+- **SA:** ถ้าดัดแปลง ต้องเผยแพร่งานที่ดัดแปลงด้วยใบอนุญาตเดียวกัน
+
+ตัวอย่างการระบุที่มา:
+
+```text
+ดัดแปลงจาก "Google Sheets: เรียนรู้และลงมือทำด้วยตนเอง" โดย namkangwaan
+https://github.com/namkangwaan/google-sheet-slide-html (CC BY-NC-SA 4.0)
+```
+
+ใบอนุญาตนี้ไม่ครอบคลุมรูปภาพจากเว็บไซต์ภายนอกที่ลิงก์ไว้ใน 5 หน้าที่กล่าวถึงข้างบน รูปเหล่านั้นยังเป็นลิขสิทธิ์ของเจ้าของเดิม
