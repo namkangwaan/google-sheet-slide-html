@@ -13,7 +13,7 @@ Use `pnpm` (`pnpm-lock.yaml`). There is no linter, formatter, or unit-test frame
 - `pnpm practice:build` — regenerate practice outputs (see pipeline below); run `check:practice` right after
 - `pnpm dev` — visual/interaction check (`.claude/launch.json` has a `dev` config on port 5173)
 
-Git remote: `github.com/namkangwaan/google-sheet-slide-html` (private, branch `main`). `dist/` and `graphify-out/` are gitignored.
+Git remote: `github.com/namkangwaan/google-sheet-slide-html` (**public**, branch `main`). `dist/`, `graphify-out/` and `.agents/skills/` are gitignored. The vendored skills are licensed and must never be committed; restore them from `skills-lock.json`.
 
 ## Architecture
 
