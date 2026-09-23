@@ -33,13 +33,16 @@ async function createPracticeWorkbook() {
     ['เปิดไฟล์', 'อัปโหลดไฟล์เข้า Drive > เปิดด้วย Google Sheets > File > Save as Google Sheets'],
     ['ตั้งชื่อ', 'ตั้งชื่อสำเนา Sheets_ชื่อเล่น_ห้อง แล้วทำในไฟล์ของตนเอง'],
     ['ตั้งค่า', 'File > Settings: Locale = Thailand, Time zone = Bangkok; ตัวอย่างใช้ชื่อฟังก์ชันอังกฤษ'],
-    ['ตำแหน่งข้อมูล', 'HR_Roster / Sales_Data / Regex_Data: หัวตารางแถว 4 ข้อมูลเริ่มแถว 5'],
+    ['ตำแหน่งข้อมูล', 'HR_Roster / Sales_Data / Regex_Data: หัวตารางแถว 4 ข้อมูลเริ่มแถว 5; Classroom / Summary / E-Commerce / Warehouse: หัวตารางแถว 1 ข้อมูลเริ่มแถว 2'],
     ['ช่องให้กรอก', 'Assignments: พิมพ์สูตรในช่องสีเขียวคอลัมน์ E ตาม Task_ID; อย่าแก้ข้อมูลต้นฉบับ'],
     ['ตัวอย่างวิธีกรอก', 'ข้อ HR-01: คลิก Assignments!E5 พิมพ์สูตร COUNTA อ้างอิงรหัสใน HR_Roster แล้วกด Enter'],
     ['ตรวจคำตอบ', 'เทียบผลกับคอลัมน์ D; เฉลยพร้อมเหตุผลอยู่หน้าเฉลยในเว็บ เปิดดูทีละข้อหลังลองทำ'],
-    ['Classroom', 'ข้อมูลร้านค้าห้องเรียน: หัวแถว 1 ข้อมูลแถว 2–5; เติมสูตรใน E2:E5 และผลสรุปใน G2 เป็นต้นไป'],
+    ['Classroom', 'ข้อมูลร้านค้าห้องเรียน: เติมสูตร Amount ใน E2:E5 และฝึก SUMIF ที่ G2 (กิจกรรมพื้นฐาน)'],
+    ['Summary', 'ตารางสรุปยอดแยกหมวดสำหรับทำกราฟและชิ้นงานพื้นฐาน: เติมสูตรในช่องสีเขียว B2:B3'],
+    ['ชิ้นงานต่อยอด', 'E-Commerce: เติม Net_Sales ใน G2:G4 แล้วสรุปด้วย QUERY; Warehouse: เติม SKU ใน E2:E4 และ Need_Restock ใน F2:F4'],
     ['วันที่', 'HR-08 ใช้ TODAY คำตอบจึงเปลี่ยนตามวันที่; ไม่ใช้คำตอบคงที่ในการตัดสิน'],
-    ['Regex', 'ผลการสกัดมักเป็นข้อความ; RG-07 มีช่องว่างท้ายหนึ่งตัว; RG-08 คืนข้อความเต็มที่ปิด 4 หลักท้าย'],
+    ['Regex', 'ผลการสกัดมักเป็นข้อความ; RG-08 คืนข้อความเต็มที่ปิด 4 หลักท้าย'],
+    ['FILTER', 'SD-10 คืนผลหลายแถว (spill) ลงช่องด้านล่าง; เว้นช่องว่างใต้คำตอบไว้ ไม่เช่นนั้นจะเกิด #REF!'],
     ['ส่งงาน', 'ส่งไฟล์หรือลิงก์สิทธิ์ผู้ดูให้ครูผ่านช่องทางที่ครูกำหนด ไม่เผยแพร่ข้อมูลส่วนตัวสู่สาธารณะ']
   ]);
   readme.eachRow(row => {
@@ -66,6 +69,32 @@ async function createPracticeWorkbook() {
     if (index > 1) row.getCell(5).fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFF0FDF4' } };
   });
   classroom.views = [{ state: 'frozen', ySplit: 1 }];
+
+  // Simple header-in-row-1 sheets for activities; learner cells are blank and highlighted green.
+  function addActivitySheet(name, columns, rows, learnerColumns) {
+    const sheet = workbook.addWorksheet(name);
+    sheet.columns = columns.map(([header, width]) => ({ header, width }));
+    sheet.addRows(rows);
+    sheet.eachRow((row, index) => {
+      row.height = 28;
+      row.eachCell({ includeEmpty: true }, (cell, colNumber) => {
+        if (colNumber > columns.length) return;
+        cell.font = { name: fontName, size: 16, bold: index === 1 };
+        cell.border = borderStyle;
+        if (index > 1 && learnerColumns.includes(colNumber)) {
+          cell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFF0FDF4' } };
+        }
+      });
+    });
+    sheet.views = [{ state: 'frozen', ySplit: 1 }];
+    return sheet;
+  }
+
+  // Used by lesson-charts and the basic capstone (lesson-capstone).
+  addActivitySheet('Summary', [['Category', 20], ['Amount', 18]], [
+    ['เครื่องเขียน', ''],
+    ['อาหาร', '']
+  ], [2]);
 
   function styleSheet(worksheet, numColumns, description) {
     worksheet.spliceRows(1, 0, 
@@ -209,7 +238,7 @@ async function createPracticeWorkbook() {
   
   wsTasks.addRows([
     // HR_Roster Tasks (10 Items)
-    ['HR-01', 'HR_Roster', 'นับจำนวนพนักงานทั้งหมดที่มีอยู่ในชีตนี้ (ใช้ COUNTA)', '7', ''],
+    ['HR-01', 'HR_Roster', 'นับจำนวนพนักงานทั้งหมดในชีต HR_Roster (ใช้ COUNTA)', '7', ''],
     ['HR-02', 'HR_Roster', 'นับจำนวนพนักงานที่อยู่ในแผนก "Engineering" (ใช้ COUNTIF)', '2', ''],
     ['HR-03', 'HR_Roster', 'นับจำนวนพนักงานที่ไม่ได้เป็นพนักงานประจำ Is_Permanent = FALSE (ใช้ COUNTIF)', '2', ''],
     ['HR-04', 'HR_Roster', 'หาผลรวมเงินเดือนของพนักงานทั้งหมด (ใช้ SUM)', '358,000.00', ''],
@@ -233,7 +262,7 @@ async function createPracticeWorkbook() {
     ['SD-07', 'Sales_Data', 'ใช้รหัส "TX-1004" ค้นหาว่าลูกค้ารายนี้ซื้อสินค้าหมวดหมู่ใด (ใช้ VLOOKUP หรือ XLOOKUP)', 'Office Supplies', ''],
     ['SD-08', 'Sales_Data', 'ใช้รหัส "TX-1006" ค้นหาว่าขายได้กี่ชิ้น (Units Sold) (ใช้ VLOOKUP หรือ XLOOKUP)', '1', ''],
     ['SD-09', 'Sales_Data', 'หายอดขายที่สูงที่สุดที่เกิดขึ้นในสาขา "Bangkok" (ใช้ MAXIFS)', '125,000.00', ''],
-    ['SD-10', 'Sales_Data', 'ดึงข้อมูล TransactionID ทั้งหมดของรายการที่มียอดขาย > 100,000 บาท (ใช้ FILTER)', 'TX-1001, TX-1005', ''],
+    ['SD-10', 'Sales_Data', 'ดึงข้อมูล TransactionID ทั้งหมดของรายการที่มียอดขาย > 100,000 บาท (ใช้ FILTER)', 'TX-1001 และ TX-1005 (แสดง 2 แถว)', ''],
     
     // Empty row separator
     ['', '', '', '', ''],
@@ -245,7 +274,7 @@ async function createPracticeWorkbook() {
     ['RG-04', 'Regex_Data', 'สกัดเอาเฉพาะโดเมนอีเมล (หลังเครื่องหมาย @) จาก Raw_Contact_Info ของ "R-002" (ใช้ REGEXEXTRACT)', 'yahoo.com', ''],
     ['RG-05', 'Regex_Data', 'สกัดเอาเฉพาะตัวเลขจาก Dirty_Amount ของ "R-002" (ใช้ REGEXEXTRACT กับ \\d+)', '450', ''],
     ['RG-06', 'Regex_Data', 'สกัดตัวเลขปี (4 หลัก) ออกจาก Invoice_Code ของ "R-004" (ใช้ REGEXEXTRACT)', '2025', ''],
-    ['RG-07', 'Regex_Data', 'ดึงชื่อคน (คำแรกสุดก่อนขีด -) ออกจาก Raw_Contact_Info ของ "R-003" (ใช้ REGEXEXTRACT)', 'Bob Bob ', ''],
+    ['RG-07', 'Regex_Data', 'ดึงชื่อคน (ข้อความก่อนขีด - โดยไม่มีช่องว่างท้าย) ออกจาก Raw_Contact_Info ของ "R-003" (ใช้ REGEXEXTRACT)', 'Bob Bob', ''],
     ['RG-08', 'Regex_Data', 'เซ็นเซอร์เบอร์โทรศัพท์ใน Raw_Contact_Info ของ "R-004" โดยเปลี่ยน 4 ตัวหลังเป็น **** (ใช้ REGEXREPLACE)', 'Alice - alice@company.co.th / 085999****', ''],
     ['RG-09', 'Regex_Data', 'ลบตัวอักษรทั้งหมดใน Dirty_Amount ของ "R-005" ให้เหลือแค่ตัวเลข (ใช้ REGEXREPLACE ลบ [^\\d])', '1200', ''],
     ['RG-10', 'Regex_Data', 'แทนที่ขีด (-) หรือช่องว่างใน Invoice_Code ของ "R-002" ให้เป็นเครื่องหมายขีดล่าง _ ทั้งหมด (ใช้ REGEXREPLACE)', 'TH2024_A12', '']
@@ -267,6 +296,21 @@ async function createPracticeWorkbook() {
     }
   });
 
+  // ==========================================
+  // SHEETS 5-6: Advanced capstone data (lesson-advanced-capstone, slides 48-49)
+  // ==========================================
+  addActivitySheet('E-Commerce', [['TxnID', 12], ['CustID', 14], ['Platform', 14], ['Gross_Sales', 14], ['Discount', 12], ['Is_Returned', 14], ['Net_Sales', 14]], [
+    ['TX-901', 'CUST-551', 'Shopee', 2450, 250, false, ''],
+    ['TX-902', 'CUST-882', 'Lazada', 8900, 500, false, ''],
+    ['TX-903', 'CUST-104', 'TikTok', 1200, 0, true, '']
+  ], [7]);
+  // ZONE-C-02 has stock equal to its reorder point: the edge case the rubric asks learners to explain.
+  addActivitySheet('Warehouse', [['Bin_Location', 16], ['Raw_Barcode', 20], ['Unit_Stock', 12], ['Reorder_Point', 15], ['SKU', 14], ['Need_Restock', 16]], [
+    ['ZONE-A-01', '[SKU-8821]-LOT4', 140, 50, '', ''],
+    ['ZONE-B-04', '[SKU-9042]-LOT1', 12, 30, '', ''],
+    ['ZONE-C-02', '[SKU-7730]-LOT2', 25, 25, '', '']
+  ], [5, 6]);
+
   // Write to File
   const exportPath = path.join(__dirname, 'public', 'Google_Sheets_Mastery_Practice.xlsx');
   await workbook.xlsx.writeFile(exportPath);
@@ -280,7 +324,10 @@ async function createPracticeWorkbook() {
   const answerPath = path.join(__dirname, 'public', 'answer_key.gs');
   const original = fs.readFileSync(answerPath, 'utf8');
   const formulas = Object.fromEntries(Object.entries(answers).map(([id, entry]) => [id, entry[0]]));
-  fs.writeFileSync(answerPath, original.replace(/var answers = \{[\s\S]*?\n  \};/, `var answers = ${JSON.stringify(formulas, null, 4)};`));
+  const answersBlock = /var answers = \{[\s\S]*?\n\s*\};/;
+  if (!answersBlock.test(original)) throw new Error(`answers block not found in ${answerPath}`);
+  // Function replacer: formulas contain "$" (e.g. "\\d{4}$"), which a replacement string would treat as a pattern.
+  fs.writeFileSync(answerPath, original.replace(answersBlock, () => `var answers = ${JSON.stringify(formulas, null, 4)};`));
   console.log(`Excel file successfully created at: ${exportPath}`);
 }
 

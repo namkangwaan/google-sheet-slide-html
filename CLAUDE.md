@@ -50,7 +50,11 @@ Rendering: slides are designed at 1280×720 and scaled to fit, but mobile widths
 
 `practice-answers.json` maps a task ID (`HR-01`…) to `[formula, Thai explanation]`. `generate-excel.cjs` reads it and writes three outputs:
 
-- `public/Google_Sheets_Mastery_Practice.xlsx` — sheets `Start_Here`, `Classroom`, `HR_Roster`, `Sales_Data`, `Regex_Data`, `Assignments`. The data sheets have a title/description block, so **data rows start at row 5**. Learner answer cells (`Assignments` column E) must stay blank.
+- `public/Google_Sheets_Mastery_Practice.xlsx` has two kinds of sheets:
+  - `HR_Roster`, `Sales_Data`, `Regex_Data` and `Assignments` have a title/description block, so **data rows start at row 5**.
+  - `Classroom`, `Summary`, `E-Commerce` and `Warehouse` are activity sheets with the header in row 1, created by `addActivitySheet()`.
+
+  Every learner cell (green) must stay blank. The web lessons quote cell addresses in these sheets (e.g. `E-Commerce!G2`, `Assignments!E25`), and `verify-practice.cjs` asserts them, so a layout change means updating `lessons.js` too. SD-10 spills, so the row below it must stay empty.
 - `src/practice-tasks.json` — task ID → answer cell, prompt text and expected value. The web answer picker reads it.
 - `public/answer_key.gs` — only the `var answers = {...};` block is regex-replaced. The rest of the Apps Script is hand-maintained.
 

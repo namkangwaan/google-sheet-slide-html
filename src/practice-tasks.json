@@ -2,7 +2,7 @@
   {
     "id": "HR-01",
     "cell": "E5",
-    "task": "นับจำนวนพนักงานทั้งหมดที่มีอยู่ในชีตนี้ (ใช้ COUNTA)",
+    "task": "นับจำนวนพนักงานทั้งหมดในชีต HR_Roster (ใช้ COUNTA)",
     "expected": "7"
   },
   {
@@ -117,7 +117,7 @@
     "id": "SD-10",
     "cell": "E25",
     "task": "ดึงข้อมูล TransactionID ทั้งหมดของรายการที่มียอดขาย > 100,000 บาท (ใช้ FILTER)",
-    "expected": "TX-1001, TX-1005"
+    "expected": "TX-1001 และ TX-1005 (แสดง 2 แถว)"
   },
   {
     "id": "RG-01",
@@ -158,8 +158,8 @@
   {
     "id": "RG-07",
     "cell": "E33",
-    "task": "ดึงชื่อคน (คำแรกสุดก่อนขีด -) ออกจาก Raw_Contact_Info ของ \"R-003\" (ใช้ REGEXEXTRACT)",
-    "expected": "Bob Bob "
+    "task": "ดึงชื่อคน (ข้อความก่อนขีด - โดยไม่มีช่องว่างท้าย) ออกจาก Raw_Contact_Info ของ \"R-003\" (ใช้ REGEXEXTRACT)",
+    "expected": "Bob Bob"
   },
   {
     "id": "RG-08",

@@ -38,7 +38,7 @@ async function verify() {
     'SD-07': orders.find(row => row[0] === 'TX-1004')[2],
     'SD-08': orders.find(row => row[0] === 'TX-1006')[4],
     'SD-09': Math.max(...orders.filter(row => row[1] === 'Bangkok').map(row => row[5])),
-    'SD-10': orders.filter(row => row[5] > 100000).map(row => row[0]).join(', ')
+    'SD-10': (ids => `${ids.join(' และ ')} (แสดง ${ids.length} แถว)`)(orders.filter(row => row[5] > 100000).map(row => row[0]))
   };
   // These simple RE2-compatible patterns can be independently checked with JS.
   for (const [id, [formula]] of Object.entries(answers).filter(([id]) => id.startsWith('RG-'))) {
@@ -79,12 +79,43 @@ async function verify() {
   const items = rows(workbook.getWorksheet('Classroom'), 2, 5);
   assert.deepEqual(items.map(row => row[2] * row[3]), [200, 50, 56, 90]);
   assert.equal(sum(items.map(row => row[2] * row[3])), 396);
+  // SD-10 spills downward; the cell below its answer must stay free or Sheets shows #REF!.
+  const sd10Row = Number(tasks.find(task => task.id === 'SD-10').cell.slice(1));
+  assert.ok(!assignments.getRow(sd10Row + 1).getCell(1).value, 'SD-10 needs an empty row below for the FILTER spill');
+
+  // Activity sheets referenced by the web lessons: expected results must match the answers shown on the site.
+  const summary = workbook.getWorksheet('Summary');
+  assert.ok(summary, 'Summary sheet (lesson-charts, lesson-capstone)');
+  assert.deepEqual(rows(summary, 1, 3).map(row => row[0]), ['Category', 'เครื่องเขียน', 'อาหาร']);
+  const byCategory = category => sum(items.filter(row => row[1] === category).map(row => row[2] * row[3]));
+  assert.deepEqual([byCategory('เครื่องเขียน'), byCategory('อาหาร')], [250, 146]);
+
+  const shop = workbook.getWorksheet('E-Commerce');
+  assert.ok(shop, 'E-Commerce sheet (lesson-advanced-capstone)');
+  assert.deepEqual(shop.getRow(1).values.slice(1), ['TxnID', 'CustID', 'Platform', 'Gross_Sales', 'Discount', 'Is_Returned', 'Net_Sales']);
+  const net = rows(shop, 2, 4).map(row => (row[5] === false ? row[3] - row[4] : 0));
+  assert.deepEqual(net, [2200, 8400, 0]);
+  assert.equal(sum(net), 10600);
+
+  const warehouse = workbook.getWorksheet('Warehouse');
+  assert.ok(warehouse, 'Warehouse sheet (lesson-advanced-capstone)');
+  assert.deepEqual(warehouse.getRow(1).values.slice(1), ['Bin_Location', 'Raw_Barcode', 'Unit_Stock', 'Reorder_Point', 'SKU', 'Need_Restock']);
+  const stock = rows(warehouse, 2, 4);
+  assert.deepEqual(stock.map(row => row[1].match(/SKU-\d+/)[0]), ['SKU-8821', 'SKU-9042', 'SKU-7730']);
+  assert.deepEqual(stock.map(row => (row[2] <= row[3] ? 'REORDER NOW' : 'OK')), ['OK', 'REORDER NOW', 'REORDER NOW']);
+  assert.ok(stock.some(row => row[2] === row[3]), 'Warehouse needs a stock = reorder point edge case');
+
+  // Learner cells in activity sheets stay blank.
+  for (const [sheet, columns, lastRow] of [[summary, [2], 3], [shop, [7], 4], [warehouse, [5, 6], 4]]) {
+    for (let r = 2; r <= lastRow; r++) for (const c of columns) assert.ok(!sheet.getRow(r).getCell(c).value, `Learner cell must stay empty: ${sheet.name}!R${r}C${c}`);
+  }
+
   let formulaCells = 0;
   workbook.eachSheet(sheet => sheet.eachRow(row => row.eachCell(cell => {
     assert.ok(!cell.value?.error, `${sheet.name}!${cell.address}`);
     if (cell.formula) formulaCells++;
   })));
   assert.equal(formulaCells, 0, 'Practice workbook should contain data and blank answer cells, not evaluated answers');
-  console.log('PASS: 30 expected answers, actual workbook rows, blank learner cells, Classroom totals, Apps Script synchronization; 0 formula/error cells. Google Sheets execution still requires an integration check.');
+  console.log('PASS: 30 expected answers, actual workbook rows, blank learner cells, Classroom/Summary totals, E-Commerce and Warehouse capstone data, SD-10 spill space, Apps Script synchronization; 0 formula/error cells. Google Sheets execution still requires an integration check.');
 }
 verify().catch(error => { console.error(error); process.exitCode = 1; });

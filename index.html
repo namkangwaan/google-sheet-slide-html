@@ -2366,7 +2366,7 @@
           <div>
             <p class="eyebrow">Comprehensive Capstone 01</p>
             <h2 class="slide-title">Master Sheet: E-Commerce Ops (ตารางหลัก)</h2>
-            <p class="slide-sub">ชุดข้อมูลปฏิบัติการอีคอมเมิร์ซสำหรับผู้เรียนฝึกเขียนฟังก์ชันผสาน VLOOKUP, FILTER และ QUERY</p>
+            <p class="slide-sub">ชุดข้อมูลปฏิบัติการอีคอมเมิร์ซ (ชีต E-Commerce ในไฟล์แบบฝึก) สำหรับฝึก IF ร่วมกับ QUERY</p>
           </div>
           <span class="slide-counter-badge font-mono text-xs font-bold text-slate-500 bg-slate-100 px-3 py-1.5 rounded-lg border border-slate-200"></span>
         </div>
@@ -2429,7 +2429,7 @@
           <div>
             <p class="eyebrow">Comprehensive Capstone 02</p>
             <h2 class="slide-title">Master Sheet: Warehouse Logistics</h2>
-            <p class="slide-sub">ชุดข้อมูลสต็อกสินค้าคลัง สำหรับฝึกใช้ฟังก์ชัน VSTACK, TOCOL และ REGEX</p>
+            <p class="slide-sub">ชุดข้อมูลสต็อกสินค้าคลัง (ชีต Warehouse ในไฟล์แบบฝึก) สำหรับฝึก REGEXEXTRACT และ IF</p>
           </div>
           <span class="slide-counter-badge font-mono text-xs font-bold text-slate-500 bg-slate-100 px-3 py-1.5 rounded-lg border border-slate-200"></span>
         </div>
@@ -2442,6 +2442,7 @@
                 <th class="p-2">Raw_Barcode</th>
                 <th class="p-2">Unit_Stock</th>
                 <th class="p-2">Reorder_Point</th>
+                <th class="p-2">SKU</th>
                 <th class="p-2">Need_Restock</th>
               </tr>
             </thead>
@@ -2451,14 +2452,24 @@
                 <td class="p-2">[SKU-8821]-LOT4</td>
                 <td class="p-2 font-bold">140</td>
                 <td class="p-2">50</td>
-                <td class="p-2 font-sans font-bold text-emerald-600">OK</td>
+                <td class="p-2 text-slate-400">?</td>
+                <td class="p-2 text-slate-400">?</td>
               </tr>
               <tr class="bg-slate-50">
                 <td class="p-2">ZONE-B-04</td>
                 <td class="p-2">[SKU-9042]-LOT1</td>
-                <td class="p-2 font-bold text-rose-600">12</td>
+                <td class="p-2 font-bold">12</td>
                 <td class="p-2">30</td>
-                <td class="p-2 font-sans font-bold text-rose-600">REORDER NOW</td>
+                <td class="p-2 text-slate-400">?</td>
+                <td class="p-2 text-slate-400">?</td>
+              </tr>
+              <tr>
+                <td class="p-2">ZONE-C-02</td>
+                <td class="p-2">[SKU-7730]-LOT2</td>
+                <td class="p-2 font-bold">25</td>
+                <td class="p-2">25</td>
+                <td class="p-2 text-slate-400">?</td>
+                <td class="p-2 text-slate-400">?</td>
               </tr>
             </tbody>
           </table>
@@ -2466,8 +2477,9 @@
 
         <div class="bg-sky-50 p-3 rounded-xl border border-sky-200 text-xs text-sky-950 my-auto">
           <b>โจทย์ทดสอบนักเรียน:</b><br>
-          1. สกัดรหัส SKU: <span class="code-pill">=REGEXEXTRACT(B2, "SKU-\d+")</span><br>
-          2. แจ้งเตือนสั่งซื้อ: <span class="code-pill">=IF(C2 &lt;= D2, "REORDER NOW", "OK")</span>
+          1. สกัดรหัส SKU จาก Raw_Barcode ลงคอลัมน์ SKU (E2:E4)<br>
+          2. เติม Need_Restock (F2:F4) เป็น "REORDER NOW" เมื่อสต็อกไม่เกินจุดสั่งซื้อ นอกนั้น "OK" แล้วอธิบายว่าแถวที่สต็อกเท่ากับจุดสั่งซื้อควรได้ค่าใด<br>
+          <span class="text-sky-700">คำใบ้และเฉลยอยู่ในหน้า "ชิ้นงานต่อยอด: ตรวจผลอีกทาง"</span>
         </div>
 
         <div class="text-xs text-slate-400 border-t border-slate-100 pt-3">
