@@ -1,0 +1,441 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Self-study pages: a quiet workbook layout with expandable explanations. */
+.slide-page { overflow-y: auto; }
+.slide-page.learning-slide { padding: 36px 56px; gap: 20px; justify-content: flex-start; }
+.lesson-heading { display: flex; justify-content: space-between; gap: 20px; }
+.lesson-heading .slide-title { font-size: 30px; }
+.slide-counter-badge { white-space: nowrap; font-size: 13px; color: #64748b; }
+.lesson-body { font-size: 18px; line-height: 1.65; }
+.lesson-body p { margin: 12px 0; }
+.lesson-body h3 { color: #065f46; font-size: 20px; font-weight: 700; margin: 10px 0; }
+.lesson-body ul, .lesson-body ol { padding-left: 28px; margin: 12px 0; }
+.lesson-body ul { list-style: disc; }
+.lesson-body ol { list-style: decimal; }
+.lesson-body li { margin-bottom: 8px; }
+.lesson-body a { color: #047857; text-decoration: underline; text-underline-offset: 4px; }
+.lesson-big { font-size: 36px; font-weight: 800; color: #064e3b; line-height: 1.5; }
+.lesson-intro, .lesson-columns { display: grid; grid-template-columns: 1fr 1fr; gap: 36px; }
+.lesson-intro { align-items: center; }
+.lesson-directory { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+.lesson-actions { display: flex; gap: 16px; flex-wrap: wrap; margin: 20px 0; }
+.lesson-link { display: inline-block; padding: 10px 16px; border: 1px solid #a7f3d0; border-radius: 6px; color: #065f46; background: #ecfdf5; }
+.lesson-note, .lesson-activity { border-left: 4px solid #059669; padding: 12px 20px; background: #f0fdf4; margin: 16px 0; }
+.lesson-body details { padding: 10px 0; border-bottom: 1px solid #cbd5e1; }
+.lesson-body summary { cursor: pointer; font-weight: 600; color: #065f46; }
+.lesson-body details > div { padding: 10px 4px; }
+.lesson-body kbd { display: inline-block; min-width: 1.6em; padding: 0 6px; border: 1px solid #cbd5e1; border-bottom-width: 2px; border-radius: 4px; background: #f8fafc; font-family: ui-monospace, monospace; font-size: 0.85em; text-align: center; color: #0f172a; }
+.lesson-body code { font-size: 16px; overflow-wrap: anywhere; white-space: normal; }
+.lesson-formula { display: flex; align-items: flex-start; gap: 12px; background: #f1f5f9; padding: 12px; margin: 12px 0; }
+.lesson-formula code { flex: 1; }
+.lesson-formula button { font-size: 14px; padding: 6px 12px; border: 1px solid #94a3b8; border-radius: 4px; white-space: nowrap; }
+.lesson-table { width: 100%; font-size: 16px; border-collapse: collapse; margin: 16px 0; }
+.lesson-table caption { text-align: left; color: #475569; margin-bottom: 6px; }
+.lesson-table th, .lesson-table td { text-align: left; padding: 9px 12px; border-bottom: 1px solid #cbd5e1; }
+.lesson-table th { background: #ecfdf5; color: #064e3b; }
+.lesson-footer { display: flex; justify-content: space-between; align-items: center; gap: 16px; margin-top: auto; padding-top: 16px; color: #64748b; font-size: 14px; }
+.lesson-footer a { color: #065f46; }
+.lesson-self-check { display: grid; gap: 16px; }
+.lesson-self-check input { width: 20px; height: 20px; accent-color: #059669; }
+#classroom-total { border: 1px solid #64748b; border-radius: 4px; padding: 8px 12px; width: 220px; }
+#practice-task { display: block; width: 100%; font-size: 16px; border: 1px solid #64748b; border-radius: 4px; padding: 12px; margin: 8px 0 16px; }
+.lesson-source { font-size: 14px; }
+button:focus-visible, a:focus-visible, summary:focus-visible, select:focus-visible, input:focus-visible { outline: 3px solid #0284c7; outline-offset: 3px; }
+
+@media (max-width: 800px) {
+  body { height: 100dvh !important; }
+  /* กันเบราว์เซอร์ตีความการปัดแนวนอนเป็น back/forward หรือ overscroll ขณะผู้เรียนปัดเปลี่ยนสไลด์ */
+  html, body, #presentation-viewport { overscroll-behavior-x: none; }
+  body > header { height: auto !important; min-height: 64px; padding: 12px !important; flex-wrap: wrap; gap: 10px; flex-shrink: 0; }
+  body > header h1 { font-size: 12px !important; }
+  body > header > div:last-child { flex-wrap: wrap; }
+  #presentation-viewport { overflow-y: auto !important; overflow-x: hidden !important; min-height: 0; background: #e2e8f0; }
+  #stage-container { position: relative !important; top: auto !important; left: auto !important; width: 100% !important; height: auto !important; min-height: 100%; transform: none !important; border-radius: 0 !important; overflow: visible !important; }
+  .slide-page, .slide-page.learning-slide, .slide-page.dark-section { position: relative !important; width: 100% !important; height: auto !important; min-height: 60vh; padding: 24px 18px !important; gap: 20px; overflow: visible; }
+  .slide-page .grid, .lesson-directory, .lesson-intro, .lesson-columns { grid-template-columns: 1fr !important; gap: 18px; }
+  .slide-page [class*="col-span-"] { grid-column: auto !important; }
+  .slide-title, .lesson-heading .slide-title { font-size: 26px; }
+  .lesson-heading { display: block; }
+  .lesson-big { font-size: 30px; }
+  .lesson-body, .slide-sub { font-size: 16px; }
+  .lesson-table { font-size: 12px; }
+  .lesson-table td, .lesson-table th { padding: 6px 3px; }
+  .lesson-formula { flex-direction: column; }
+  .lesson-footer { flex-wrap: wrap; }
+  .slide-page > div { min-width: 0; max-width: 100%; }
+  .slide-page table { display: block; max-width: 100%; overflow-x: auto; }
+  .slide-page code, .slide-page .font-mono { overflow-wrap: anywhere; }
+  .slide-page .flex { flex-wrap: wrap; }
+  #overview-modal, #help-modal { padding: 16px !important; overflow-y: auto; }
+  #floating-controls { left: 8px !important; bottom: 8px !important; }
+  body.theater-mode #floating-controls, body.fullscreen-mode #floating-controls { opacity: 1 !important; transform: none !important; }
+  body > footer { padding: 8px 12px !important; height: auto !important; gap: 8px; flex-wrap: wrap; flex-shrink: 0; }
+}
+
+/* Touch reading: swipe hint and ebook-style page turns (tablet, phone, e-ink). */
+.swipe-hint { display: none; }
+@media (pointer: coarse) {
+  /* ปุ่มกว้าง 44px ตามขนาดแตะขั้นต่ำ แต่วงกลมที่มองเห็นเล็ก 30px เพื่อไม่บังเนื้อหา */
+  .swipe-hint {
+    position: fixed; top: 50%; z-index: 50;
+    display: flex; align-items: center; justify-content: center;
+    width: 44px; height: 44px; margin-top: -22px; padding: 0; border: 0;
+    background: transparent; cursor: pointer;
+    -webkit-tap-highlight-color: transparent; touch-action: manipulation;
+    animation: swipe-hint-pulse 1.8s ease-in-out infinite;
+    --hint-nudge: -4px;
+  }
+  .swipe-hint span {
+    display: flex; align-items: center; justify-content: center;
+    width: 30px; height: 30px; border-radius: 999px;
+    background: rgba(15, 23, 42, 0.18); color: rgba(255, 255, 255, 0.9);
+    font-size: 13px; transition: background 0.15s, transform 0.15s;
+  }
+  .swipe-hint:active { animation-play-state: paused; opacity: 1; }
+  .swipe-hint:active span { background: rgba(5, 150, 105, 0.85); transform: scale(0.9); }
+  .swipe-hint-next { right: 0; }
+  .swipe-hint-prev { left: 0; --hint-nudge: 4px; }
+  .swipe-hint[hidden] { display: none; }
+  .swipe-hint span { transition: background 0.15s, transform 0.15s, opacity 0.6s ease; }
+  /* ซ่อนแล้วต้องแตะทะลุไปถึงเนื้อหาด้านล่างได้ */
+  body.swipe-hints-idle .swipe-hint { pointer-events: none; animation-play-state: paused; }
+  body.swipe-hints-idle .swipe-hint span { opacity: 0; }
+  .slide-page.page-turn-next { animation: page-turn-next 0.38s cubic-bezier(0.22, 1, 0.36, 1); }
+  .slide-page.page-turn-prev { animation: page-turn-prev 0.38s cubic-bezier(0.22, 1, 0.36, 1); }
+}
+@keyframes swipe-hint-pulse {
+  0%, 100% { opacity: 0.25; transform: translateX(0); }
+  50% { opacity: 0.8; transform: translateX(var(--hint-nudge, -4px)); }
+}
+/* หน้าใหม่เลื่อนมาทับหน้าเดิมพร้อมเงาที่สันหน้า เหมือนพลิกหน้าหนังสือ */
+@keyframes page-turn-next {
+  from { transform: translateX(100%); box-shadow: -18px 0 30px rgba(15, 23, 42, 0.18); }
+  to { transform: translateX(0); box-shadow: none; }
+}
+@keyframes page-turn-prev {
+  from { transform: translateX(-100%); box-shadow: 18px 0 30px rgba(15, 23, 42, 0.18); }
+  to { transform: translateX(0); box-shadow: none; }
+}
+/* e-ink รีเฟรชช้าและเกิดภาพค้าง: ไม่กระพริบ ไม่เลื่อน ใช้ขอบคมชัดแทนความโปร่ง */
+@media (update: slow) {
+  .swipe-hint { animation: none; opacity: 1; }
+  .swipe-hint span { background: #fff; color: #000; border: 1px solid #000; transition: none; }
+  .slide-page.page-turn-next, .slide-page.page-turn-prev { animation: none; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: 0.01ms !important; animation-delay: 0ms !important; transition-duration: 0.01ms !important; }
+}
+
+@layer base {
+  * {
+    box-sizing: border-box;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  body {
+    background-color: #0b0f19;
+    color: #0f172a;
+    overflow: hidden;
+    width: 100vw;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    user-select: text;
+    font-family: 'Google Sans', 'Google Sans Text', sans-serif;
+  }
+}
+
+@layer components {
+  #presentation-viewport {
+    flex: 1;
+    position: relative;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    background: radial-gradient(circle at center, #111827 0%, #030712 100%);
+  }
+
+  #stage-container {
+    width: 1280px;
+    height: 720px;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform-origin: center center;
+    transform: translate(-50%, -50%) scale(1);
+    background: #ffffff;
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.4), 0 0 0 1px rgba(255, 255, 255, 0.05); /* Enterprise soft shadow */
+    border-radius: 16px;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    backface-visibility: hidden;
+    transition: box-shadow 0.4s cubic-bezier(0.22, 1, 0.36, 1), border-radius 0.4s ease;
+  }
+
+  body.theater-mode header,
+  body.theater-mode footer,
+  body.fullscreen-mode header,
+  body.fullscreen-mode footer,
+  body:fullscreen header,
+  body:fullscreen footer {
+    display: none !important;
+  }
+
+  body.theater-mode #presentation-viewport,
+  body.fullscreen-mode #presentation-viewport,
+  body:fullscreen #presentation-viewport {
+    padding: 0 !important;
+    width: 100vw !important;
+    height: 100vh !important;
+  }
+
+  #floating-controls {
+    position: fixed;
+    bottom: 24px;
+    left: 50%;
+    transform: translateX(-50%) translateY(80px);
+    background: rgba(15, 23, 42, 0.94);
+    backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    border-radius: 9999px;
+    padding: 6px 16px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    z-index: 100;
+    opacity: 0;
+    pointer-events: none;
+    transition: all 0.25s ease;
+  }
+
+  body.theater-mode #floating-controls,
+  body.fullscreen-mode #floating-controls,
+  body:fullscreen #floating-controls {
+    pointer-events: auto;
+    opacity: 0.85;
+    transform: translateX(-50%) translateY(0);
+  }
+
+  body.theater-mode:hover #floating-controls,
+  body.fullscreen-mode:hover #floating-controls,
+  body:fullscreen:hover #floating-controls {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
+
+  .slide-page {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 1280px;
+    height: 720px;
+    padding: 56px 72px; /* Increased padding for enterprise breathing room */
+    background: #ffffff;
+    display: none;
+    flex-direction: column;
+    justify-content: space-between;
+    opacity: 0;
+    transform: scale(0.97) translateY(10px);
+    transition: opacity 0.5s cubic-bezier(0.22, 1, 0.36, 1), transform 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+
+  .slide-page.active {
+    display: flex;
+    opacity: 1;
+    transform: scale(1) translateY(0);
+    z-index: 10;
+  }
+
+  .slide-page.cover-slide {
+    padding: 0;
+    background: #15803d;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .slide-page.dark-section {
+    background: #064e3b;
+    color: #ffffff;
+    padding: 60px 72px;
+    justify-content: center;
+    align-items: flex-start;
+  }
+
+  .eyebrow {
+    font-size: 13px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.18em; /* Tighter tracking for enterprise look */
+    color: #059669;
+    margin-bottom: 6px;
+  }
+
+  .slide-title {
+    font-size: 32px;
+    font-weight: 800;
+    color: #0f172a;
+    line-height: 1.25;
+    letter-spacing: -0.03em; /* Tighter for modern headings */
+  }
+
+  .slide-sub {
+    font-size: 16px;
+    font-weight: 500;
+    color: #64748b;
+    margin-top: 8px;
+    line-height: 1.5;
+  }
+
+  code, .code-pill {
+    font-family: 'Google Sans Code', 'JetBrains Mono', monospace;
+    background: #f1f5f9;
+    color: #0f172a;
+    padding: 2px 8px;
+    border-radius: 6px;
+    font-size: 13px;
+    display: inline-block;
+    vertical-align: middle;
+  }
+
+  .formula-copy-wrapper {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    padding: 5px 12px;
+    max-width: 100%;
+  }
+
+  .formula-copy-wrapper code {
+    background: transparent;
+    padding: 0;
+    color: #065f46;
+    font-weight: 600;
+    font-size: 14px;
+  }
+
+  .formula-copy-btn {
+    background: #ffffff;
+    border: 1px solid #cbd5e1;
+    border-radius: 6px;
+    color: #475569;
+    cursor: pointer;
+    font-size: 11.5px;
+    padding: 3px 9px;
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    font-weight: 600;
+    transition: all 0.15s ease;
+    font-family: 'Google Sans', sans-serif;
+  }
+
+  .formula-copy-btn:hover {
+    background: #059669;
+    border-color: #059669;
+    color: #ffffff;
+  }
+
+  .formula-copy-btn.copied {
+    background: #10b981 !important;
+    border-color: #10b981 !important;
+    color: #ffffff !important;
+  }
+
+  #overview-modal,
+  #help-modal {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(11, 15, 25, 0.92);
+    backdrop-filter: blur(10px);
+    z-index: 999;
+    padding: 28px 40px;
+    flex-direction: column;
+  }
+
+  #overview-modal.open,
+  #help-modal.open {
+    display: flex;
+  }
+
+  .kbd-key {
+    font-family: 'Google Sans Code', 'JetBrains Mono', monospace;
+    background: #1e293b;
+    border: 1px solid #334155;
+    color: #cbd5e1;
+    padding: 2px 7px;
+    border-radius: 6px;
+    font-size: 11px;
+    font-weight: 600;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+  }
+
+  #toast {
+    position: fixed;
+    bottom: 80px;
+    right: 32px;
+    background: #0f172a;
+    color: #ffffff;
+    border: 1px solid #334155;
+    padding: 12px 20px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 13.5px;
+    font-weight: 600;
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.4);
+    opacity: 0;
+    pointer-events: none;
+    transform: translateY(12px);
+    transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+    z-index: 1000;
+  }
+
+  #toast.show {
+    opacity: 1;
+    transform: translateY(0);
+    pointer-events: auto;
+  }
+
+  /* Micro-animations Utilities */
+  .stagger-1 { animation-delay: 100ms; }
+  .stagger-2 { animation-delay: 200ms; }
+  .stagger-3 { animation-delay: 300ms; }
+  .stagger-4 { animation-delay: 400ms; }
+  .stagger-5 { animation-delay: 500ms; }
+  .stagger-6 { animation-delay: 600ms; }
+  .stagger-7 { animation-delay: 700ms; }
+
+  /* Generic initial state for items that will animate on show */
+  .animate-on-show {
+    opacity: 0;
+  }
+
+  /* Enterprise Aesthetic Overrides for HTML Utility Classes */
+  .bg-slate-50 {
+    background: #ffffff !important;
+    border: 1px solid #f1f5f9 !important;
+    box-shadow: 0 10px 40px -10px rgba(0, 0, 0, 0.04), 0 0 0 1px rgba(0, 0, 0, 0.02) !important;
+    transition: all 0.3s cubic-bezier(0.22, 1, 0.36, 1) !important;
+  }
+  .bg-slate-50:hover {
+    box-shadow: 0 20px 40px -10px rgba(16, 185, 129, 0.08), 0 0 0 1px rgba(16, 185, 129, 0.15) !important;
+    transform: translateY(-2px) !important;
+    border-color: transparent !important;
+  }
+}
+
+@layer components {
+  .nav-card-lg {
+    @apply bg-slate-50 p-6 rounded-2xl border border-slate-200 hover:border-emerald-500 hover:shadow-lg hover:-translate-y-1 transition-all duration-200 cursor-pointer flex flex-col justify-between;
+  }
+}

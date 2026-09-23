@@ -1,0 +1,20 @@
+# Dependencies
+node_modules/
+
+# Build output (pnpm build)
+dist/
+
+# Generated analysis artifacts
+graphify-out/
+
+# Local / personal
+.env
+.env.*
+CLAUDE.local.md
+MEMORY.md
+.claude/settings.local.json
+
+# OS / editor
+.DS_Store
+Thumbs.db
+*.log

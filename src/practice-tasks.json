@@ -1,0 +1,182 @@
+[
+  {
+    "id": "HR-01",
+    "cell": "E5",
+    "task": "นับจำนวนพนักงานทั้งหมดที่มีอยู่ในชีตนี้ (ใช้ COUNTA)",
+    "expected": "7"
+  },
+  {
+    "id": "HR-02",
+    "cell": "E6",
+    "task": "นับจำนวนพนักงานที่อยู่ในแผนก \"Engineering\" (ใช้ COUNTIF)",
+    "expected": "2"
+  },
+  {
+    "id": "HR-03",
+    "cell": "E7",
+    "task": "นับจำนวนพนักงานที่ไม่ได้เป็นพนักงานประจำ Is_Permanent = FALSE (ใช้ COUNTIF)",
+    "expected": "2"
+  },
+  {
+    "id": "HR-04",
+    "cell": "E8",
+    "task": "หาผลรวมเงินเดือนของพนักงานทั้งหมด (ใช้ SUM)",
+    "expected": "358,000.00"
+  },
+  {
+    "id": "HR-05",
+    "cell": "E9",
+    "task": "หาผลรวมเงินเดือนของพนักงานแผนก \"Marketing\" (ใช้ SUMIF)",
+    "expected": "86,000.00"
+  },
+  {
+    "id": "HR-06",
+    "cell": "E10",
+    "task": "หาเงินเดือนเฉลี่ยของพนักงานแผนก \"Sales\" (ใช้ AVERAGEIF)",
+    "expected": "50,000.00"
+  },
+  {
+    "id": "HR-07",
+    "cell": "E11",
+    "task": "พนักงานที่เงินเดือนสูงที่สุดคือเท่าไร (ใช้ MAX)",
+    "expected": "85,000.00"
+  },
+  {
+    "id": "HR-08",
+    "cell": "E12",
+    "task": "คำนวณอายุงาน (ปี) ของ \"EMP-04\" อิงจาก Hire_Date ถึงวันนี้ (ใช้ DATEDIF)",
+    "expected": "ตามวันที่จริง"
+  },
+  {
+    "id": "HR-09",
+    "cell": "E13",
+    "task": "ตรวจสอบว่า \"EMP-07\" เป็นพนักงานประจำ และเงินเดือน > 40,000 หรือไม่ (ใช้ AND)",
+    "expected": "TRUE"
+  },
+  {
+    "id": "HR-10",
+    "cell": "E14",
+    "task": "ถ้า \"EMP-01\" อยู่แผนก Engineering ให้แสดงคำว่า \"Tech\" นอกนั้น \"Business\" (ใช้ IF)",
+    "expected": "Business"
+  },
+  {
+    "id": "SD-01",
+    "cell": "E16",
+    "task": "หายอดขายรวมทั้งหมดของทุกรายการ (ใช้ SUM)",
+    "expected": "593,000.00"
+  },
+  {
+    "id": "SD-02",
+    "cell": "E17",
+    "task": "หายอดขายรวม (Total Revenue) เฉพาะสาขา \"Bangkok\" (ใช้ SUMIF)",
+    "expected": "198,000.00"
+  },
+  {
+    "id": "SD-03",
+    "cell": "E18",
+    "task": "หายอดขายรวมของสินค้าหมวด \"Electronics\" ที่ขายใน \"Chiang Mai\" (ใช้ SUMIFS)",
+    "expected": "310,000.00"
+  },
+  {
+    "id": "SD-04",
+    "cell": "E19",
+    "task": "นับจำนวนธุรกรรม (Transaction) ที่เกิดขึ้นในวันที่ \"2026-09-20\" (ใช้ COUNTIF)",
+    "expected": "2"
+  },
+  {
+    "id": "SD-05",
+    "cell": "E20",
+    "task": "สินค้าหมวด \"Office Supplies\" ขายได้ทั้งหมดกี่ชิ้น (Units Sold) (ใช้ SUMIF)",
+    "expected": "180"
+  },
+  {
+    "id": "SD-06",
+    "cell": "E21",
+    "task": "หาค่าเฉลี่ยของยอดขาย (Average Revenue) ต่อธุรกรรมในสาขา \"Phuket\" (ใช้ AVERAGEIF)",
+    "expected": "30,000.00"
+  },
+  {
+    "id": "SD-07",
+    "cell": "E22",
+    "task": "ใช้รหัส \"TX-1004\" ค้นหาว่าลูกค้ารายนี้ซื้อสินค้าหมวดหมู่ใด (ใช้ VLOOKUP หรือ XLOOKUP)",
+    "expected": "Office Supplies"
+  },
+  {
+    "id": "SD-08",
+    "cell": "E23",
+    "task": "ใช้รหัส \"TX-1006\" ค้นหาว่าขายได้กี่ชิ้น (Units Sold) (ใช้ VLOOKUP หรือ XLOOKUP)",
+    "expected": "1"
+  },
+  {
+    "id": "SD-09",
+    "cell": "E24",
+    "task": "หายอดขายที่สูงที่สุดที่เกิดขึ้นในสาขา \"Bangkok\" (ใช้ MAXIFS)",
+    "expected": "125,000.00"
+  },
+  {
+    "id": "SD-10",
+    "cell": "E25",
+    "task": "ดึงข้อมูล TransactionID ทั้งหมดของรายการที่มียอดขาย > 100,000 บาท (ใช้ FILTER)",
+    "expected": "TX-1001, TX-1005"
+  },
+  {
+    "id": "RG-01",
+    "cell": "E27",
+    "task": "ตรวจสอบว่า Raw_Contact_Info ของ \"R-001\" มีโดเมน \"@gmail.com\" หรือไม่ (ใช้ REGEXMATCH)",
+    "expected": "TRUE"
+  },
+  {
+    "id": "RG-02",
+    "cell": "E28",
+    "task": "ตรวจสอบว่า Invoice_Code ของ \"R-001\" ขึ้นต้นด้วยคำว่า \"INV\" หรือไม่ (ใช้ REGEXMATCH กับ ^)",
+    "expected": "TRUE"
+  },
+  {
+    "id": "RG-03",
+    "cell": "E29",
+    "task": "ตรวจสอบว่า Dirty_Amount ของ \"R-001\" มีคำว่า \"THB\" อยู่หรือไม่ (ใช้ REGEXMATCH)",
+    "expected": "TRUE"
+  },
+  {
+    "id": "RG-04",
+    "cell": "E30",
+    "task": "สกัดเอาเฉพาะโดเมนอีเมล (หลังเครื่องหมาย @) จาก Raw_Contact_Info ของ \"R-002\" (ใช้ REGEXEXTRACT)",
+    "expected": "yahoo.com"
+  },
+  {
+    "id": "RG-05",
+    "cell": "E31",
+    "task": "สกัดเอาเฉพาะตัวเลขจาก Dirty_Amount ของ \"R-002\" (ใช้ REGEXEXTRACT กับ \\d+)",
+    "expected": "450"
+  },
+  {
+    "id": "RG-06",
+    "cell": "E32",
+    "task": "สกัดตัวเลขปี (4 หลัก) ออกจาก Invoice_Code ของ \"R-004\" (ใช้ REGEXEXTRACT)",
+    "expected": "2025"
+  },
+  {
+    "id": "RG-07",
+    "cell": "E33",
+    "task": "ดึงชื่อคน (คำแรกสุดก่อนขีด -) ออกจาก Raw_Contact_Info ของ \"R-003\" (ใช้ REGEXEXTRACT)",
+    "expected": "Bob Bob "
+  },
+  {
+    "id": "RG-08",
+    "cell": "E34",
+    "task": "เซ็นเซอร์เบอร์โทรศัพท์ใน Raw_Contact_Info ของ \"R-004\" โดยเปลี่ยน 4 ตัวหลังเป็น **** (ใช้ REGEXREPLACE)",
+    "expected": "Alice - alice@company.co.th / 085999****"
+  },
+  {
+    "id": "RG-09",
+    "cell": "E35",
+    "task": "ลบตัวอักษรทั้งหมดใน Dirty_Amount ของ \"R-005\" ให้เหลือแค่ตัวเลข (ใช้ REGEXREPLACE ลบ [^\\d])",
+    "expected": "1200"
+  },
+  {
+    "id": "RG-10",
+    "cell": "E36",
+    "task": "แทนที่ขีด (-) หรือช่องว่างใน Invoice_Code ของ \"R-002\" ให้เป็นเครื่องหมายขีดล่าง _ ทั้งหมด (ใช้ REGEXREPLACE)",
+    "expected": "TH2024_A12"
+  }
+]
