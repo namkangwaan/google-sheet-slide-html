@@ -15,6 +15,8 @@ Use `pnpm` (`pnpm-lock.yaml`). There is no linter, formatter, or unit-test frame
 
 Git remote: `github.com/namkangwaan/google-sheet-slide-html` (**public**, branch `main`). `dist/`, `graphify-out/` and `.agents/skills/` are gitignored. The vendored skills are licensed and must never be committed; restore them from `skills-lock.json`.
 
+Deploy: every push to `main` runs `.github/workflows/deploy-pages.yml` (frozen install → `check:practice` → `build` → GitHub Pages) and publishes to https://namkangwaan.github.io/google-sheet-slide-html/. The site lives under a subpath, so `vite.config.js` uses `base: './'`. Keep asset and download links relative (`./...`), never root-absolute (`/...`). CI reads the pnpm version from `packageManager` in `package.json`.
+
 ## Architecture
 
 ### Slide deck = static HTML + runtime rewrite
