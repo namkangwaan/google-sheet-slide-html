@@ -181,6 +181,12 @@ function onOpen() {
 }
 
 function sameValue_(actual, expected) {
+  // Sheets may return a date-formatted number (e.g. MAX(dates)-MIN(dates)) as a Date; compare its serial value.
+  // Use local (script time zone) components: getTime() would be off by the time zone offset (Bangkok +7h).
+  if (actual instanceof Date) {
+    var local = Date.UTC(actual.getFullYear(), actual.getMonth(), actual.getDate(), actual.getHours(), actual.getMinutes(), actual.getSeconds());
+    actual = Math.round((local - Date.UTC(1899, 11, 30)) / 86400000 * 1e6) / 1e6;
+  }
   if (typeof expected === 'number') return typeof actual === 'number' && Math.round(actual * 100) === Math.round(expected * 100);
   if (typeof expected === 'boolean') return actual === expected;
   return String(actual) === String(expected);
