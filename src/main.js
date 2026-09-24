@@ -545,39 +545,74 @@ function toggleHelpModal() {
 }
 
 async function copyFormula(button, text) {
-  try {
-    if (navigator.clipboard && window.isSecureContext) {
+  let copied = false;
+  if (navigator.clipboard && window.isSecureContext) {
+    try {
       await navigator.clipboard.writeText(text);
-    } else {
-      fallbackCopy(text);
+      copied = true;
+    } catch (err) {
+      // Permission denied or an old WebView: try the textarea method before giving up.
+      console.warn('Clipboard API failed, using fallback copy:', err);
     }
-  } catch (err) {
-    fallbackCopy(text);
   }
-  showToast(`Copied: ${text}`);
+  if (!copied) copied = fallbackCopy(text);
 
-  const originalHTML = button.innerHTML;
-  button.innerHTML = '<i class="fa-solid fa-check"></i> Copied!';
+  if (!copied) {
+    showToast('คัดลอกอัตโนมัติไม่ได้ เลือกสูตรให้แล้ว กดค้างแล้วเลือก "คัดลอก"');
+    selectFormulaText(button, text);
+    return;
+  }
+  showToast(`คัดลอกแล้ว: ${text}`);
+
+  if (button.dataset.copyOriginal === undefined) button.dataset.copyOriginal = button.innerHTML;
+  button.innerHTML = '<i class="fa-solid fa-check"></i> คัดลอกแล้ว';
   button.classList.add('copied');
-
-  setTimeout(() => {
-    button.innerHTML = originalHTML;
+  clearTimeout(Number(button.dataset.copyTimer));
+  button.dataset.copyTimer = String(setTimeout(() => {
+    button.innerHTML = button.dataset.copyOriginal;
+    delete button.dataset.copyOriginal;
     button.classList.remove('copied');
-  }, 2000);
+  }, 2000));
 }
 
+// execCommand fallback for http:// (non-secure) pages and older mobile browsers. Returns whether it worked.
 function fallbackCopy(text) {
   const tempArea = document.createElement('textarea');
   tempArea.value = text;
-  tempArea.style.position = 'fixed';
-  tempArea.style.left = '-9999px';
+  // readonly + 16px: iOS would otherwise open the keyboard and zoom the page on focus.
+  tempArea.setAttribute('readonly', '');
+  tempArea.style.cssText = 'position:fixed;top:0;left:0;width:1px;height:1px;opacity:0;font-size:16px;';
   document.body.appendChild(tempArea);
-  tempArea.focus();
-  tempArea.select();
+  let copied = false;
   try {
-    document.execCommand('copy');
-  } catch (err) {}
+    tempArea.focus();
+    tempArea.select();
+    tempArea.setSelectionRange(0, text.length); // iOS Safari ignores select() on its own
+    copied = document.execCommand('copy');
+  } catch (err) {
+    console.warn('Fallback copy failed:', err);
+  }
   document.body.removeChild(tempArea);
+  return copied;
+}
+
+// Last resort: select the formula shown next to the button so the learner can copy it manually.
+// Formula markup varies (code, .code-pill, coloured spans), so match on the text rather than on class names.
+function selectFormulaText(button, text) {
+  const normalize = value => value.replace(/\s+/g, '');
+  const target = normalize(text);
+  let match = null;
+  for (let node = button.parentElement, depth = 0; node && !match && depth < 4; node = node.parentElement, depth++) {
+    match = [node, ...node.querySelectorAll('*')].find(el => !el.contains(button) && normalize(el.textContent) === target)
+      // The container itself may hold the formula as its own text alongside the (icon-only) button.
+      || (normalize(node.textContent) === target ? node : null);
+  }
+  if (!match) return;
+  const range = document.createRange();
+  range.selectNodeContents(match);
+  const selection = window.getSelection();
+  selection.removeAllRanges();
+  selection.addRange(range);
 }
 
 function showToast(message) {
