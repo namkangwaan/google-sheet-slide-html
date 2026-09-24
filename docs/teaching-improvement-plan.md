@@ -37,7 +37,8 @@
 - ดาวน์โหลด `Google_Sheets_Mastery_Practice.xlsx` และ `answer_key.gs` ได้ (HTTP 200)
 - จอมือถือ 375px ไม่มีแถบเลื่อนแนวนอน
 - แก้เพิ่ม: ตัวจัดการปุ่มลัดใน `src/main.js` ไม่ error เมื่อ event target ไม่ใช่ Element
-- **ยังไม่ได้ทดสอบ**: รันสูตรจริงใน Google Sheets (นำเข้า XLSX, Locale/Time zone, REGEXEXTRACT, QUERY) และการคัดลอกสูตรบนอุปกรณ์จริง
+- ทดสอบในภายหลังแล้ว: นำเข้า XLSX, Locale/Time zone และ REGEXEXTRACT ใน Google Sheets จริง (ดูหัวข้อการบ้านด้านล่าง) และปุ่มคัดลอกสูตรบนมือถือจริงคัดลอกได้ถูกต้อง
+- **ยังไม่ได้ทดสอบ**: สูตร QUERY ในสไลด์บทต่อยอดใน Google Sheets จริง
 - หน้าสุดท้าย: Next/→/Space/ปัด ไม่วนกลับ (ปุ่ม Next ถูกปิด และมี toast แนะนำ) กด H เพื่อกลับหน้าแรก
 
 ### การบ้านและสคริปต์เฉลยครู (ทดสอบ 24 กันยายน 2026)
