@@ -4,6 +4,7 @@ const path = require('node:path');
 const ExcelJS = require('exceljs');
 const answers = require('../src/practice-answers.json');
 const tasks = require('../src/practice-tasks.json');
+const { SELF_CHECK, buildSelfCheck, parseExpected } = require('./self-check.cjs');
 
 async function verify() {
   const root = path.resolve(__dirname, '..');
@@ -58,7 +59,7 @@ async function verify() {
     assert.equal(row.getCell(1).value, task.id, `Answer position: ${task.id}`);
     assert.equal(row.getCell(3).value, task.task);
     assert.equal(row.getCell(4).value, task.expected);
-    assert.ok(!row.getCell(5).value, `Student cell must stay empty: ${task.id}`);
+    assert.equal(row.getCell(5).value, null, `Student cell must be truly empty (not an empty string): ${task.id}`);
     const actual = expected[task.id];
     if (typeof actual === 'number') assert.equal(Number(task.expected.replaceAll(',', '')), actual, task.id);
     else if (typeof actual === 'boolean') assert.equal(task.expected, String(actual).toUpperCase(), task.id);
@@ -81,7 +82,7 @@ async function verify() {
   assert.equal(sum(items.map(row => row[2] * row[3])), 396);
   // SD-10 spills downward; the cell below its answer must stay free or Sheets shows #REF!.
   const sd10Row = Number(tasks.find(task => task.id === 'SD-10').cell.slice(1));
-  assert.ok(!assignments.getRow(sd10Row + 1).getCell(1).value, 'SD-10 needs an empty row below for the FILTER spill');
+  for (let c = 1; c <= 6; c++) assert.equal(assignments.getRow(sd10Row + 1).getCell(c).value, null, `SD-10 spill row must be truly empty (col ${c})`);
 
   // Activity sheets referenced by the web lessons: expected results must match the answers shown on the site.
   const summary = workbook.getWorksheet('Summary');
@@ -107,15 +108,32 @@ async function verify() {
 
   // Learner cells in activity sheets stay blank.
   for (const [sheet, columns, lastRow] of [[summary, [2], 3], [shop, [7], 4], [warehouse, [5, 6], 4]]) {
-    for (let r = 2; r <= lastRow; r++) for (const c of columns) assert.ok(!sheet.getRow(r).getCell(c).value, `Learner cell must stay empty: ${sheet.name}!R${r}C${c}`);
+    for (let r = 2; r <= lastRow; r++) for (const c of columns) assert.equal(sheet.getRow(r).getCell(c).value, null, `Learner cell must be truly empty: ${sheet.name}!R${r}C${c}`);
   }
 
+  // Self-check formulas: rebuilt from values computed above from the data, not from the sheet labels,
+  // so a wrong constant embedded in a check formula fails here.
+  const typedExpected = { ...expected, 'HR-08': null, 'SD-10': orders.filter(row => row[5] > 100000).map(row => row[0]) };
+  for (const task of tasks) {
+    const check = assignments.getCell(`F${task.cell.slice(1)}`);
+    assert.equal(check.formula, buildSelfCheck(task.id, task.cell, typedExpected[task.id]), `Self-check formula: ${task.id}`);
+    assert.deepEqual(parseExpected(task.id, task.expected), typedExpected[task.id], `Expected label parses to data value: ${task.id}`);
+  }
+  const taskRows = tasks.map(task => Number(task.cell.slice(1)));
+  const score = assignments.getCell('F3').formula;
+  assert.equal(score, `COUNTIF(F${Math.min(...taskRows)}:F${Math.max(...taskRows)},"${SELF_CHECK.ok}")&" / 30"`);
+
+  // Formulas are allowed only in the self-check column; data and learner cells hold no answers.
+  const allowed = new Set([...taskRows.map(r => `Assignments!F${r}`), 'Assignments!F3']);
   let formulaCells = 0;
   workbook.eachSheet(sheet => sheet.eachRow(row => row.eachCell(cell => {
     assert.ok(!cell.value?.error, `${sheet.name}!${cell.address}`);
-    if (cell.formula) formulaCells++;
+    if (cell.formula) {
+      assert.ok(allowed.has(`${sheet.name}!${cell.address}`), `Unexpected formula: ${sheet.name}!${cell.address}`);
+      formulaCells++;
+    }
   })));
-  assert.equal(formulaCells, 0, 'Practice workbook should contain data and blank answer cells, not evaluated answers');
-  console.log('PASS: 30 expected answers, actual workbook rows, blank learner cells, Classroom/Summary totals, E-Commerce and Warehouse capstone data, SD-10 spill space, Apps Script synchronization; 0 formula/error cells. Google Sheets execution still requires an integration check.');
+  assert.equal(formulaCells, allowed.size, 'Every task has one self-check formula plus the score');
+  console.log('PASS: 30 expected answers, actual workbook rows, blank learner cells, Classroom/Summary totals, E-Commerce and Warehouse capstone data, SD-10 spill space, 30 self-check formulas + score, Apps Script synchronization; no other formula/error cells. Google Sheets execution still requires an integration check.');
 }
 verify().catch(error => { console.error(error); process.exitCode = 1; });

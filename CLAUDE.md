@@ -55,6 +55,9 @@ Rendering: slides are designed at 1280×720 and scaled to fit, but mobile widths
   - `Classroom`, `Summary`, `E-Commerce` and `Warehouse` are activity sheets with the header in row 1, created by `addActivitySheet()`.
 
   Every learner cell (green) must stay blank. The web lessons quote cell addresses in these sheets (e.g. `E-Commerce!G2`, `Assignments!E25`), and `verify-practice.cjs` asserts them, so a layout change means updating `lessons.js` too. SD-10 spills, so the row below it must stay empty.
+
+  Write blank cells as `null`, never `''`. exceljs saves `''` as an empty-string cell, which blocks a FILTER spill and counts as non-empty. `blankCells()` in the generator handles this.
+- `Assignments!F` (`Self_Check`) holds the workbook's only formulas: one per task, plus the score in `F3`. `scripts/self-check.cjs` builds them and is shared by the generator and the verifier. The verifier rebuilds each check from values it computes from the data, so a wrong constant in a check fails `check:practice`.
 - `src/practice-tasks.json` — task ID → answer cell, prompt text and expected value. The web answer picker reads it.
 - `public/answer_key.gs` — only the `var answers = {...};` block is regex-replaced. The rest of the Apps Script is hand-maintained.
 

@@ -2,6 +2,11 @@ const ExcelJS = require('exceljs');
 const fs = require('fs');
 const path = require('path');
 const answers = require('./src/practice-answers.json');
+const { SELF_CHECK, buildSelfCheck, parseExpected } = require('./scripts/self-check.cjs');
+
+// '' would be written as an empty *string* cell, which is not blank: it blocks FILTER spill
+// (#SPILL!/#REF!) and counts as non-empty. Learner and separator cells must be truly empty.
+const blankCells = rows => rows.map(row => row.map(value => (value === '' ? null : value)));
 
 async function createPracticeWorkbook() {
   const workbook = new ExcelJS.Workbook();
@@ -36,7 +41,7 @@ async function createPracticeWorkbook() {
     ['ตำแหน่งข้อมูล', 'HR_Roster / Sales_Data / Regex_Data: หัวตารางแถว 4 ข้อมูลเริ่มแถว 5; Classroom / Summary / E-Commerce / Warehouse: หัวตารางแถว 1 ข้อมูลเริ่มแถว 2'],
     ['ช่องให้กรอก', 'Assignments: พิมพ์สูตรในช่องสีเขียวคอลัมน์ E ตาม Task_ID; อย่าแก้ข้อมูลต้นฉบับ'],
     ['ตัวอย่างวิธีกรอก', 'ข้อ HR-01: คลิก Assignments!E5 พิมพ์สูตร COUNTA อ้างอิงรหัสใน HR_Roster แล้วกด Enter'],
-    ['ตรวจคำตอบ', 'เทียบผลกับคอลัมน์ D; เฉลยพร้อมเหตุผลอยู่หน้าเฉลยในเว็บ เปิดดูทีละข้อหลังลองทำ'],
+    ['ตรวจคำตอบ', 'คอลัมน์ F (Self_Check) ขึ้น ✓ เมื่อผลถูก ✗ เมื่อยังไม่ตรง และ ⚠ ถ้าพิมพ์ค่าแทนสูตร คะแนนรวมอยู่ที่ F3; เฉลยพร้อมเหตุผลอยู่หน้าเฉลยในเว็บ'],
     ['Classroom', 'ข้อมูลร้านค้าห้องเรียน: เติมสูตร Amount ใน E2:E5 และฝึก SUMIF ที่ G2 (กิจกรรมพื้นฐาน)'],
     ['Summary', 'ตารางสรุปยอดแยกหมวดสำหรับทำกราฟและชิ้นงานพื้นฐาน: เติมสูตรในช่องสีเขียว B2:B3'],
     ['ชิ้นงานต่อยอด', 'E-Commerce: เติม Net_Sales ใน G2:G4 แล้วสรุปด้วย QUERY; Warehouse: เติม SKU ใน E2:E4 และ Need_Restock ใน F2:F4'],
@@ -54,12 +59,12 @@ async function createPracticeWorkbook() {
   });
   const classroom = workbook.addWorksheet('Classroom');
   classroom.columns = [{ header: 'Item', width: 22 }, { header: 'Category', width: 20 }, { header: 'Qty', width: 12 }, { header: 'Unit_Price', width: 16 }, { header: 'Amount', width: 18 }];
-  classroom.addRows([
+  classroom.addRows(blankCells([
     ['สมุด', 'เครื่องเขียน', 10, 20, ''],
     ['ดินสอ', 'เครื่องเขียน', 5, 10, ''],
     ['น้ำ', 'อาหาร', 8, 7, ''],
     ['ขนม', 'อาหาร', 6, 15, '']
-  ]);
+  ]));
   classroom.eachRow((row, index) => {
     row.height = 28;
     row.eachCell({ includeEmpty: true }, cell => {
@@ -74,7 +79,7 @@ async function createPracticeWorkbook() {
   function addActivitySheet(name, columns, rows, learnerColumns) {
     const sheet = workbook.addWorksheet(name);
     sheet.columns = columns.map(([header, width]) => ({ header, width }));
-    sheet.addRows(rows);
+    sheet.addRows(blankCells(rows));
     sheet.eachRow((row, index) => {
       row.height = 28;
       row.eachCell({ includeEmpty: true }, (cell, colNumber) => {
@@ -233,10 +238,11 @@ async function createPracticeWorkbook() {
     { header: 'Worksheet_Ref', key: 'ref', width: 15 },
     { header: 'Assignment_Task', key: 'task', width: 75 },
     { header: 'Expected_Result', key: 'expected', width: 20 },
-    { header: 'Your_Formula', key: 'formula', width: 45 }
+    { header: 'Your_Formula', key: 'formula', width: 45 },
+    { header: 'Self_Check', key: 'check', width: 20 }
   ];
   
-  wsTasks.addRows([
+  wsTasks.addRows(blankCells([
     // HR_Roster Tasks (10 Items)
     ['HR-01', 'HR_Roster', 'นับจำนวนพนักงานทั้งหมดในชีต HR_Roster (ใช้ COUNTA)', '7', ''],
     ['HR-02', 'HR_Roster', 'นับจำนวนพนักงานที่อยู่ในแผนก "Engineering" (ใช้ COUNTIF)', '2', ''],
@@ -278,10 +284,38 @@ async function createPracticeWorkbook() {
     ['RG-08', 'Regex_Data', 'เซ็นเซอร์เบอร์โทรศัพท์ใน Raw_Contact_Info ของ "R-004" โดยเปลี่ยน 4 ตัวหลังเป็น **** (ใช้ REGEXREPLACE)', 'Alice - alice@company.co.th / 085999****', ''],
     ['RG-09', 'Regex_Data', 'ลบตัวอักษรทั้งหมดใน Dirty_Amount ของ "R-005" ให้เหลือแค่ตัวเลข (ใช้ REGEXREPLACE ลบ [^\\d])', '1200', ''],
     ['RG-10', 'Regex_Data', 'แทนที่ขีด (-) หรือช่องว่างใน Invoice_Code ของ "R-002" ให้เป็นเครื่องหมายขีดล่าง _ ทั้งหมด (ใช้ REGEXREPLACE)', 'TH2024_A12', '']
-  ]);
+  ]));
   
-  const descTasks = 'บททดสอบท้ายบทเรียน (รวม 30 ข้อ) ให้นำความรู้ทั้งหมดมาแก้ไขโจทย์ด้านล่าง โดยให้ผู้เรียนพิมพ์สูตรเพื่อหาคำตอบลงในคอลัมน์ Your_Formula สีเขียว ให้ตรงกับ Expected Result';
-  styleSheet(wsTasks, 5, descTasks);
+  const descTasks = 'บททดสอบท้ายบทเรียน (รวม 30 ข้อ) พิมพ์สูตรในคอลัมน์ Your_Formula สีเขียว คอลัมน์ Self_Check จะบอกทันทีว่าผลตรงกับ Expected_Result หรือไม่ และเตือนถ้าพิมพ์ตัวเลขแทนสูตร';
+  styleSheet(wsTasks, 6, descTasks);
+
+  // Self-check column F + running score in the spacer row above the header.
+  const firstTaskRow = 5;
+  const lastTaskRow = wsTasks.rowCount;
+  wsTasks.eachRow((row, rowNum) => {
+    const id = row.getCell(1).value;
+    if (rowNum < firstTaskRow || !answers[id]) return;
+    const check = row.getCell(6);
+    check.value = { formula: buildSelfCheck(id, `E${rowNum}`, parseExpected(id, row.getCell(4).value)) };
+    check.alignment = alignCenter;
+  });
+  const scoreRow = wsTasks.getRow(3);
+  scoreRow.height = 26;
+  scoreRow.getCell(5).value = 'คะแนนตรวจตัวเอง';
+  scoreRow.getCell(5).alignment = alignRight;
+  scoreRow.getCell(5).font = { name: fontName, size: 16, bold: true, color: { argb: 'FF059669' } };
+  scoreRow.getCell(6).value = { formula: `COUNTIF(F${firstTaskRow}:F${lastTaskRow},"${SELF_CHECK.ok}")&" / ${Object.keys(answers).length}"` };
+  scoreRow.getCell(6).alignment = alignCenter;
+  scoreRow.getCell(6).font = { name: fontName, size: 16, bold: true, color: { argb: 'FF059669' } };
+  const statusStyle = (font, fill) => ({ font: { color: { argb: font }, bold: true }, fill: { type: 'pattern', pattern: 'solid', bgColor: { argb: fill } } });
+  wsTasks.addConditionalFormatting({
+    ref: `F${firstTaskRow}:F${lastTaskRow}`,
+    rules: [
+      { type: 'containsText', operator: 'containsText', text: '✓', priority: 1, style: statusStyle('FF047857', 'FFD1FAE5') },
+      { type: 'containsText', operator: 'containsText', text: '✗', priority: 2, style: statusStyle('FFB91C1C', 'FFFEE2E2') },
+      { type: 'containsText', operator: 'containsText', text: '⚠', priority: 3, style: statusStyle('FFB45309', 'FFFEF3C7') },
+    ],
+  });
   
   // Highlight the "Your_Formula" column and format number cells
   wsTasks.eachRow((row, rowNum) => {
