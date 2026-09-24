@@ -42,3 +42,7 @@ desktop.ini
 *.log
 npm-debug.log*
 pnpm-debug.log*
+
+# Homework answer key (teacher only). The repo is public, so this never gets committed.
+# Back this folder up yourself: it is the only copy of the homework answers.
+teacher/

@@ -34,6 +34,9 @@ jobs:
       # Block the deploy if practice answers drift from the workbook.
       - run: pnpm check:practice
 
+      # Structure only in CI: the teacher answer key is gitignored and never reaches the runner.
+      - run: pnpm check:homework
+
       - run: pnpm build
 
       - uses: actions/configure-pages@v5

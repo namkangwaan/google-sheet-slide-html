@@ -56,13 +56,23 @@
 
 ถ้าอยากให้เติมเฉลยในชีตอัตโนมัติ ใช้ [`answer_key.gs`](public/answer_key.gs) ได้ (ไม่บังคับ) สคริปต์นี้เพิ่มเมนู `[ 💡 Google Sheets Mastery ]` ในชีต แล้วเติมเฉลยเฉพาะช่องที่ยังว่าง ติดตั้งโดยเปิด **Extensions → Apps Script** วางโค้ด กด Save แล้วรีเฟรชชีต
 
+### การบ้านที่ครูให้คะแนน
+
+[`Google_Sheets_Homework.xlsx`](https://namkangwaan.github.io/google-sheet-slide-html/Google_Sheets_Homework.xlsx) ใช้ข้อมูลชุดใหม่ (ร้านค้าสามสาขา 16 คำสั่งซื้อ) มี 20 ข้อ ข้อละ 5 คะแนน ในไฟล์ไม่มีคอลัมน์คำตอบหรือตัวตรวจอัตโนมัติ และไม่มีเฉลยในเว็บ ผู้เรียนต้องเติมคอลัมน์คำนวณในชีต `Orders` ก่อน ข้อที่ต้องใช้ `$` และ IFERROR จึงตอบถูกได้ก็ต่อเมื่อเติมคอลัมน์นั้นถูกเท่านั้น
+
+เฉลยการบ้านเก็บไว้ในโฟลเดอร์ `teacher/` บนเครื่องของครูเท่านั้น (อยู่ใน `.gitignore` เพราะ repo นี้เป็น public) **โฟลเดอร์นี้เป็นสำเนาเดียวของเฉลย ต้องสำรองไว้เอง**
+
+1. รัน `pnpm homework:build` เพื่อสร้าง `teacher/homework_answer_key.gs` จาก `teacher/homework-answers.json`
+2. ทำสำเนาไฟล์ที่ผู้เรียนส่งมา แล้วติดตั้งสคริปต์ผ่าน **Extensions → Apps Script**
+3. เมนู `[ ✅ ตรวจการบ้าน ]` → **ตรวจและให้คะแนน** จะเขียน ✓/✗/⚠ ลงคอลัมน์ F และคะแนนที่ `F3` ส่วน **แสดงเฉลย** จะสร้างชีต `Answer_Key` ที่มีสูตรและคำตอบ
+
 ตอนส่งงาน ให้ผู้เรียนแชร์ลิงก์แบบสิทธิ์ **ผู้ดู** ตามช่องทางที่ครูกำหนด หน้า [ประเมินตนเองก่อนส่งงาน](https://namkangwaan.github.io/google-sheet-slide-html/#slide-57) มีรายการให้ผู้เรียนตรวจก่อนส่ง
 
 ลิงก์ตรงของแต่ละหน้าไม่เปลี่ยน ครูแปะลิงก์อย่าง `…/#lesson-pivot` ลงในเอกสารหรือ LMS ได้เลย ถึงภายหลังจะสลับลำดับบทเรียน ลิงก์ก็ยังพาไปหน้าเดิม
 
 ## เนื้อหาหลักสูตร (Curriculum)
 
-มีทั้งหมด 75 หน้า [สารบัญในเว็บ](https://namkangwaan.github.io/google-sheet-slide-html/#slide-3) กดไปแต่ละหัวข้อได้โดยตรง
+มีทั้งหมด 76 หน้า [สารบัญในเว็บ](https://namkangwaan.github.io/google-sheet-slide-html/#slide-3) กดไปแต่ละหัวข้อได้โดยตรง
 
 <details open>
 <summary><strong>เส้นทางพื้นฐาน</strong> (หน้า 1-35)</summary>
@@ -95,7 +105,7 @@
 
 </details>
 
-หลังเรียนจบ มีหน้าเฉลยแบบฝึก 30 ข้อ หน้าประเมินตนเองก่อนส่งงาน และหน้าสรุป
+หลังเรียนจบ มีหน้าเฉลยแบบฝึก 30 ข้อ หน้าการบ้าน 20 ข้อที่ครูตรวจ หน้าประเมินตนเองก่อนส่งงาน และหน้าสรุป
 
 ## การใช้งานบนอุปกรณ์ต่าง ๆ (Devices & Controls)
 
@@ -123,6 +133,8 @@ pnpm dev              # dev server ที่ http://localhost:5173
 | `pnpm preview` | เปิดดูผล build ในเครื่อง |
 | `pnpm practice:build` | สร้างไฟล์แบบฝึก, `practice-tasks.json` และ `answer_key.gs` ใหม่จาก `src/practice-answers.json` |
 | `pnpm check:practice` | ตรวจเฉลย 30 ข้อเทียบกับข้อมูลจริงในไฟล์แบบฝึก |
+| `pnpm homework:build` | สร้างไฟล์การบ้าน และสร้างสคริปต์เฉลยสำหรับครูใน `teacher/` ถ้ามีไฟล์เฉลยอยู่ |
+| `pnpm check:homework` | ตรวจว่าไฟล์การบ้านไม่มีคำตอบหรือสูตรหลุดไป ถ้ามี `teacher/` จะคำนวณสูตรเฉลยทั้ง 20 ข้อด้วย HyperFormula ด้วย |
 
 โปรเจกต์นี้ไม่มี unit test framework และไม่มี linter ต้องผ่าน `pnpm build` และ `pnpm check:practice` ก่อนเปิด PR ถ้าแก้ส่วนที่มองเห็นได้ ให้ลองใน `pnpm dev` ทั้งบนคอมพิวเตอร์และมือถือด้วย
 
@@ -162,6 +174,8 @@ flowchart LR
 │   └── practice-*.json        # เฉลย (ต้นทาง) และ metadata โจทย์ (generate)
 ├── public/                    # ไฟล์ดาวน์โหลด: .xlsx และ answer_key.gs
 ├── generate-excel.cjs         # สร้างไฟล์แบบฝึก
+├── generate-homework.cjs      # สร้างไฟล์การบ้าน (ไม่มีเฉลย)
+├── teacher/                   # เฉลยการบ้าน: อยู่ในเครื่องครูเท่านั้น ไม่ commit
 ├── scripts/verify-practice.cjs
 ├── docs/                      # แผนปรับปรุงและบันทึกผลการตรวจ
 └── .github/workflows/         # CI: build + deploy GitHub Pages
@@ -173,8 +187,9 @@ flowchart LR
 
 1. `pnpm install --frozen-lockfile`
 2. `pnpm check:practice` ถ้าเฉลยไม่ตรงกับข้อมูล workflow จะหยุดและไม่ deploy
-3. `pnpm build`
-4. Deploy ขึ้น GitHub Pages → https://namkangwaan.github.io/google-sheet-slide-html/
+3. `pnpm check:homework` ตรวจเฉพาะโครงสร้าง เพราะเฉลยการบ้านไม่อยู่ใน repo
+4. `pnpm build`
+5. Deploy ขึ้น GitHub Pages → https://namkangwaan.github.io/google-sheet-slide-html/
 
 เว็บอยู่ใต้ path `/google-sheet-slide-html/` จึงตั้ง `vite.config.js` เป็น `base: './'` ลิงก์รูปและไฟล์ดาวน์โหลดต้องเขียนแบบ relative (`./…`) ถ้าขึ้นต้นด้วย `/` จะเปิดไม่เจอบน Pages
 

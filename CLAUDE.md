@@ -65,6 +65,21 @@ Rendering: slides are designed at 1280×720 and scaled to fit, but mobile widths
 
 Never hand-edit `practice-tasks.json` or the `answers` block in `answer_key.gs`. Change the JSON or the generator, then run `pnpm practice:build && pnpm check:practice`.
 
+### Homework pipeline (answers are private)
+
+`generate-homework.cjs` holds the homework data and the prompts for its 20 tasks, and writes `public/Google_Sheets_Homework.xlsx`. The workbook deliberately has no expected-result column, no self-check and no formulas, since any of those would leak answers.
+
+The answers live only in `teacher/homework-answers.json`. That folder is gitignored because the repo is public, and it is the only copy, so **never commit it, and never move answers into committed files, the site or `public/`**. When the file exists, `pnpm homework:build` also writes `teacher/homework_answer_key.gs`, an Apps Script grader.
+
+`pnpm check:homework` checks the structure in CI. When `teacher/` is present, it also evaluates every answer formula with HyperFormula (a devDependency). It confirms two traps still work: an unlocked `Settings!B2` in column I breaks HW-18/19, and a lookup without IFERROR breaks HW-10.
+
+HyperFormula quirks:
+- It needs `TRUE()`/`FALSE()`.
+- It has no XLOOKUP, REGEX\* or TEXTJOIN.
+- It sizes a FILTER spill by the input range, not the actual matches.
+
+Keep answer formulas within what HyperFormula supports; students may still answer with XLOOKUP.
+
 ## Content conventions
 
 - The audience is beginner Thai learners studying on their own. Write lesson text in Thai and keep function names in English.

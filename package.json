@@ -11,11 +11,14 @@
     "preview": "vite preview",
     "validate": "vite build",
     "practice:build": "node generate-excel.cjs",
-    "check:practice": "node scripts/verify-practice.cjs"
+    "check:practice": "node scripts/verify-practice.cjs",
+    "homework:build": "node generate-homework.cjs",
+    "check:homework": "node scripts/verify-homework.cjs"
   },
   "devDependencies": {
     "autoprefixer": "^10.4.19",
     "exceljs": "^4.4.0",
+    "hyperformula": "2.7.1",
     "postcss": "^8.4.38",
     "tailwindcss": "^3.4.4",
     "vite": "^5.2.11"
