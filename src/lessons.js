@@ -125,7 +125,7 @@ export function initializeLessons() {
   newSlides.forEach(slide => stage.append(slide));
 
   // IDs remain stable for existing public links; position is calculated separately.
-  const order = [1,'lesson-setup',2,3,'lesson-cells',9,10,11,12,16,4,5,'lesson-references',8,13,14,42,43,'lesson-summary','lesson-errors',44,28,29,30,31,32,33,34,35,'lesson-lookup-check','lesson-tools','lesson-validation','lesson-charts','lesson-pivot','lesson-capstone',6,7,15,17,18,19,20,21,22,23,24,25,26,27,'lesson-tables-check',36,37,38,39,'lesson-query-check',51,52,53,54,55,56,40,41,'lesson-regex-check',45,46,47,'lesson-functional-check',48,49,50,'lesson-advanced-capstone','lesson-answers','lesson-homework',57,58];
+  const order = [0,1,'lesson-setup',2,3,'lesson-cells',9,10,11,12,16,4,5,'lesson-references',8,13,14,42,43,'lesson-summary','lesson-errors',44,28,29,30,31,32,33,34,35,'lesson-lookup-check','lesson-tools','lesson-validation','lesson-charts','lesson-pivot','lesson-capstone',6,7,15,17,18,19,20,21,22,23,24,25,26,27,'lesson-tables-check',36,37,38,39,'lesson-query-check',51,52,53,54,55,56,40,41,'lesson-regex-check',45,46,47,'lesson-functional-check',48,49,50,'lesson-advanced-capstone','lesson-answers','lesson-homework',57,58];
   order.forEach(id => stage.append(document.getElementById(typeof id === 'number' ? `slide-${id}` : id)));
 
   document.querySelectorAll('[data-copy-formula]').forEach(button => {
