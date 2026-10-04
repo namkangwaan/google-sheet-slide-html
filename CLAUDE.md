@@ -10,6 +10,7 @@ Use `pnpm` (`pnpm-lock.yaml`). There is no linter, formatter, or unit-test frame
 
 - `pnpm build` — must pass after any change
 - `pnpm check:practice` — asserts the 30 practice answers against workbook data; run after touching anything in the practice pipeline
+- `pnpm check:video` — asserts the trailer's scene data and timeline math; run after touching `src/video/` or the practice workbook
 - `pnpm practice:build` — regenerate practice outputs (see pipeline below); run `check:practice` right after
 - `pnpm dev` — visual/interaction check (`.claude/launch.json` has a `dev` config on port 5173)
 
@@ -19,17 +20,27 @@ Deploy: every push to `main` runs `.github/workflows/deploy-pages.yml` (frozen i
 
 ## Architecture
 
+### Pages
+
+Three Vite entries (`vite.config.js`):
+
+- `index.html` is the hero/landing page (`src/hero/`). An inline script in its `<head>` forwards old deck links (`./#lesson-setup`, `./#12`) to `./slides.html#...`, except the hero's own anchors listed there and in `HERO_ANCHORS` in `src/hero/main.js`. Add new hero section ids to both lists.
+- `slides.html` is the deck (below).
+- `video.html` is the WebGL trailer (`src/video/`); `?embed=1&autoplay=1` is how the hero embeds it. `pnpm check:video` asserts every number the trailer shows against the workbook. `public/trailer-poster.jpg` is a captured frame of the intro (about 5 s in); recapture it if the intro changes.
+
+`src/curriculum.js` is the course map used by both the deck's table of contents (slide-3) and the hero's lesson cards.
+
 ### Slide deck = static HTML + runtime rewrite
 
-1. `index.html` holds the original slides as `<section class="slide-page" id="slide-N">` inside `#stage-container`, plus the chrome (footer nav, grid modal, help modal, toast).
+1. `slides.html` holds the original slides as `<section class="slide-page" id="slide-N">` inside `#stage-container`, plus the chrome (footer nav, grid modal, help modal, toast).
 2. `src/main.js` calls `initializeLessons()` from `src/lessons.js` **before** anything else reads the DOM.
 3. `initializeLessons()`:
-   - builds self-study slides with `page(id, title, level, lead, body)`. If `id` already exists (e.g. `slide-1`, `slide-57`, `slide-58`), it **replaces that slide's content**. Editing those slides in `index.html` has no visible effect.
+   - builds self-study slides with `page(id, title, level, lead, body)`. If `id` already exists (e.g. `slide-1`, `slide-57`, `slide-58`), it **replaces that slide's content**. Editing those slides in `slides.html` has no visible effect.
    - re-appends every slide in the `order` array. That array is the real deck order. A slide missing from `order` stays wherever it was appended, so add every new slide to it.
    - wires the interactive parts: copy-formula buttons, the practice-answer picker (`#practice-task`) and the Classroom total checker.
 4. `main.js` then collects `.slide-page`, derives the total and the position from the DOM, and syncs the URL hash to the slide **id** (`#lesson-setup`, `#slide-58`; a numeric hash `#12` maps to `slide-12`). IDs are public link targets, so never rename them. Reorder through `order` only.
 
-Slide numbers in `index.html` (`slide-N`) do **not** match their position in the deck.
+Slide numbers in `slides.html` (`slide-N`) do **not** match their position in the deck.
 
 Navigation rules in `main.js`: keyboard shortcuts are ignored while focus is in an input/select/textarea/contenteditable. Next stops on the last slide (no wrap-around; a toast suggests `H`). `H`/`Home` goes to slide 1. `L`/`End` goes to the last slide.
 
@@ -42,7 +53,7 @@ Touch reading works like an ebook:
 
 A swipe is ignored when it starts in the 24px edge zones (the iOS/Android back gesture), when it's a pinch or the page is zoomed in, when it's mostly vertical, or when it starts inside a table that scrolls sideways.
 
-Motion is off on e-ink screens (`(update: slow)`) and with `prefers-reduced-motion`: pages change instantly and the hint doesn't blink. See `prefersStillPages()`. The inline `onclick="..."` handlers in `index.html` rely on functions exported on `window` at the bottom of `main.js`, so keep those exports when refactoring.
+Motion is off on e-ink screens (`(update: slow)`) and with `prefers-reduced-motion`: pages change instantly and the hint doesn't blink. See `prefersStillPages()`. The inline `onclick="..."` handlers in `slides.html` rely on functions exported on `window` at the bottom of `main.js`, so keep those exports when refactoring.
 
 Rendering: slides are designed at 1280×720 and scaled to fit, but mobile widths switch to a scrolling reading layout (`src/style.css`). Check both.
 

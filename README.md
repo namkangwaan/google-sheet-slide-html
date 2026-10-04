@@ -147,7 +147,7 @@ pnpm dev              # dev server ที่ http://localhost:5173
 ```mermaid
 flowchart LR
   subgraph Deck["Slide deck (runtime)"]
-    H["index.html<br/>สไลด์ต้นฉบับ"] --> L["src/lessons.js<br/>เพิ่มบทเรียน + จัดลำดับ"]
+    H["slides.html<br/>สไลด์ต้นฉบับ"] --> L["src/lessons.js<br/>เพิ่มบทเรียน + จัดลำดับ"]
     L --> M["src/main.js<br/>นำทาง · ปัด · ปุ่มลัด"]
   end
   subgraph Practice["Practice pipeline (build time)"]
@@ -160,13 +160,15 @@ flowchart LR
   T --> L
 ```
 
-ลำดับหน้ากำหนดใน array `order` ของ `src/lessons.js` ไม่ได้ขึ้นกับลำดับใน `index.html` และตัวเลขใน id (`slide-N`) ไม่ได้บอกตำแหน่งของหน้า slide ID ใช้เป็นลิงก์สาธารณะด้วย จึงห้ามเปลี่ยนชื่อ ถ้าจะสลับลำดับให้แก้ที่ `order` อย่างเดียว
+ลำดับหน้ากำหนดใน array `order` ของ `src/lessons.js` ไม่ได้ขึ้นกับลำดับใน `slides.html` และตัวเลขใน id (`slide-N`) ไม่ได้บอกตำแหน่งของหน้า slide ID ใช้เป็นลิงก์สาธารณะด้วย จึงห้ามเปลี่ยนชื่อ ถ้าจะสลับลำดับให้แก้ที่ `order` อย่างเดียว
 
 `practice-tasks.json` และบล็อก `answers` ใน `answer_key.gs` เป็นไฟล์ที่ generate ขึ้น อย่าแก้ด้วยมือ ให้แก้ `src/practice-answers.json` แล้วรัน `pnpm practice:build && pnpm check:practice`
 
 ```text
 .
-├── index.html                 # สไลด์ต้นฉบับ + ส่วนควบคุมหน้าเว็บ
+├── index.html                 # หน้าแรก (Hero): วิดีโอ บทเรียน และสไลด์ตัวอย่าง
+├── slides.html                # สไลด์ต้นฉบับ + ส่วนควบคุมหน้าเว็บ
+├── video.html                 # วิดีโอแนะนำคอร์ส (WebGL)
 ├── src/
 │   ├── lessons.js             # บทเรียนเรียนด้วยตนเอง + ลำดับหน้า
 │   ├── main.js                # นำทาง, ปัด, ปุ่มลัด, โหมดเต็มจอ

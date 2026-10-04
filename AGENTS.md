@@ -2,7 +2,7 @@
 
 ## Project Structure & Module Organization
 
-This Vite project teaches Google Sheets. `index.html` contains the original slides; `src/lessons.js` adds self-study content and orders the deck. `src/main.js` controls navigation; `src/style.css` defines Tailwind layers and responsive styles. Practice answers and generated task metadata live in `src/practice-*.json`. Downloads live in `public/`. `generate-excel.cjs` builds the practice workbook; `scripts/verify-practice.cjs` checks it. `dist/` is build output; `graphify-out/` contains analysis artifacts.
+This Vite project teaches Google Sheets. `index.html` is the landing page, `slides.html` contains the original slides, and `video.html` is the WebGL trailer; `src/lessons.js` adds self-study content and orders the deck. `src/main.js` controls navigation; `src/style.css` defines Tailwind layers and responsive styles. Practice answers and generated task metadata live in `src/practice-*.json`. Downloads live in `public/`. `generate-excel.cjs` builds the practice workbook; `scripts/verify-practice.cjs` checks it. `dist/` is build output; `graphify-out/` contains analysis artifacts.
 
 ## Build, Test, and Development Commands
 
