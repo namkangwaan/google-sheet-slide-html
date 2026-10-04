@@ -167,7 +167,7 @@
 
 /* On phones the deck switches to its scrolling reading layout, which needs height. */
 @media (max-width: 640px) {
-  .slide-frame { aspect-ratio: auto; height: 72vh; }
+  .slide-frame { aspect-ratio: auto; height: 72vh; height: 72dvh; }
   .play-badge { width: 60px; height: 60px; margin: -30px 0 0 -30px; }
   .play-badge svg { width: 26px; }
 }

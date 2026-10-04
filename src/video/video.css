@@ -35,6 +35,8 @@ html, body {
   position: relative;
   container-type: inline-size;
   width: min(100%, calc((100vh - 72px) * 16 / 9));
+  /* dvh excludes mobile browser toolbars; browsers without it keep the vh line. */
+  width: min(100%, calc((100dvh - 72px) * 16 / 9));
   aspect-ratio: 16 / 9;
   background: #000;
   border-radius: 14px;
@@ -61,6 +63,8 @@ html, body {
   border-radius: 0.5em;
   background: rgba(2, 6, 23, 0.72);
   /* Same share of the frame as the caption burned into recordings (34px of 1920). */
+  /* cqw needs container queries (Safari 16, Firefox 110); older browsers keep the vw size. */
+  font-size: clamp(12px, 1.5vw, 26px);
   font-size: max(12px, 1.8cqw);
   line-height: 1.5;
   width: max-content;
@@ -157,6 +161,7 @@ html, body {
 }
 .vp-btn:hover:not(:disabled), .vp-btn:focus-visible { background: rgba(255, 255, 255, 0.1); }
 .vp-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+.vp-btn[hidden] { display: none; }
 .vp-btn svg { width: 24px; height: 24px; fill: currentColor; }
 .vp-btn .i-pause, .vp.playing .vp-btn .i-play { display: none; }
 .vp.playing .vp-btn .i-pause { display: block; }
@@ -222,6 +227,11 @@ html, body {
 
 .vp-stage:fullscreen { width: 100%; height: 100%; border-radius: 0; aspect-ratio: auto; container-type: normal; }
 .vp-stage:fullscreen .vp-caption { font-size: max(16px, 1.8vw); }
+/* Safari < 16.4 matches only the prefixed pseudo-class; keep it in its own rule so
+   other browsers do not drop the selector list. */
+.vp-stage:-webkit-full-screen { width: 100%; height: 100%; border-radius: 0; aspect-ratio: auto; container-type: normal; }
+.vp-stage:-webkit-full-screen canvas { object-fit: contain; }
+.vp-stage:-webkit-full-screen .vp-caption { font-size: max(16px, 1.8vw); }
 .vp-stage:fullscreen canvas { object-fit: contain; }
 
 /* Phones: the stage is too small to overlay controls, so they sit below it.
@@ -247,8 +257,8 @@ html, body {
 }
 
 /* ?embed=1: fills a 16:9 iframe on the hero page. */
-.vp.embed { min-height: 100vh; padding: 0; gap: 0; }
-.vp.embed .vp-stage { width: min(100vw, calc(100vh * 16 / 9)); border-radius: 0; box-shadow: none; }
+.vp.embed { min-height: 100vh; min-height: 100dvh; padding: 0; gap: 0; }
+.vp.embed .vp-stage { width: min(100vw, calc(100vh * 16 / 9)); width: min(100vw, calc(100dvh * 16 / 9)); border-radius: 0; box-shadow: none; }
 .vp.embed .vp-keys { display: none; }
 @media (max-width: 720px) {
   .vp.embed .vp-bar { gap: 0; }

@@ -15,6 +15,9 @@ const ARP = [0, 1, 2, 3, 2, 1, 2, 3];
 // Notes are scheduled slightly ahead so the first one is never late.
 const LEAD = 0.18;
 
+// Safari < 14.1 only has the webkit-prefixed constructor.
+const AudioContextClass = typeof window === 'undefined' ? null : (window.AudioContext || window.webkitAudioContext || null);
+
 const hz = note => 440 * 2 ** ((note - 69) / 12);
 const clamp01 = v => Math.min(1, Math.max(0, v));
 
@@ -54,7 +57,7 @@ export function createAudio(timeline) {
   const bandOn = T => T >= 2 * BAR && T < total - 9;
 
   function build() {
-    ctx = new AudioContext();
+    ctx = new AudioContextClass();
     master = ctx.createGain();
     master.gain.value = 0;
     const compressor = ctx.createDynamicsCompressor();
@@ -68,8 +71,11 @@ export function createAudio(timeline) {
     out.connect(speaker);
     speaker.connect(ctx.destination);
     // The recording tap sits before the mute control, so muting never silences the file.
-    recordDestination = ctx.createMediaStreamDestination();
-    out.connect(recordDestination);
+    // Older WebKit lacks it; recordings then have picture only.
+    if (typeof ctx.createMediaStreamDestination === 'function') {
+      recordDestination = ctx.createMediaStreamDestination();
+      out.connect(recordDestination);
+    }
 
     const convolver = ctx.createConvolver();
     convolver.buffer = impulse(ctx, 2.8);
@@ -228,7 +234,15 @@ export function createAudio(timeline) {
   }
 
   function silence(at) {
-    for (const node of live) node.stop(at);
+    for (const node of live) {
+      try {
+        node.stop(at);
+      } catch (error) {
+        // Older WebKit throws InvalidStateError on a second stop(); the node already has
+        // its own stop time and master gain is ramping to 0, so it is safe to ignore.
+        if (error.name !== 'InvalidStateError') throw error;
+      }
+    }
     live.clear();
   }
 
@@ -244,6 +258,7 @@ export function createAudio(timeline) {
   return {
     // Must run from a user gesture the first time (autoplay policy).
     async ensure() {
+      if (!AudioContextClass) return;
       if (!ctx) build();
       if (ctx.state === 'suspended') await ctx.resume();
     },
@@ -280,6 +295,9 @@ export function createAudio(timeline) {
     },
     setMuted(muted) {
       if (ctx) speaker.gain.setTargetAtTime(muted ? 0 : 1, ctx.currentTime, 0.03);
+    },
+    get available() {
+      return Boolean(AudioContextClass);
     },
     get running() {
       return ctx?.state === 'running';

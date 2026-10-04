@@ -1,4 +1,5 @@
 import { createRenderer } from './renderer.js';
+import { createRenderer2D } from './renderer2d.js';
 import { createLayer, W, H } from './layer.js';
 import { buildTimeline, locate } from './timeline.js';
 import { SCENES } from './scenes.js';
@@ -10,7 +11,7 @@ import * as d from './draw.js';
 const $ = id => document.getElementById(id);
 const root = $('player');
 const stage = $('stage');
-const canvas = $('screen');
+let canvas = $('screen');
 const captionEl = $('caption');
 const startButton = $('start');
 const seekInput = $('seek');
@@ -22,6 +23,8 @@ const recText = $('rec-text');
 const unmuteButton = $('unmute');
 const params = new URLSearchParams(window.location.search);
 const embedded = params.get('embed') === '1';
+// ?renderer=2d forces the Canvas2D fallback, to check what browsers without WebGL2 see.
+const force2D = params.get('renderer') === '2d';
 if (embedded) {
   root.classList.add('embed');
   // Inside the hero iframe, links must replace the whole page, not the frame.
@@ -55,31 +58,14 @@ function showFallback(message) {
   startButton.hidden = true;
 }
 
-function initGL() {
-  gl = canvas.getContext('webgl2', { antialias: false, alpha: false, premultipliedAlpha: false, preserveDrawingBuffer: false });
-  if (!gl) {
-    showFallback();
-    return false;
-  }
-  try {
-    renderer = createRenderer(gl);
-  } catch (error) {
-    console.error(error);
-    showFallback('เตรียมกราฟิกไม่สำเร็จ ลองรีเฟรชหน้า หรือเปิดด้วยเบราว์เซอร์รุ่นล่าสุด');
-    return false;
-  }
-  lastSize = '';
-  dirty = true;
-  return true;
-}
-
-canvas.addEventListener('webglcontextlost', (event) => {
+function onContextLost(event) {
   event.preventDefault();
   player.pause();
   renderer = null;
   showFallback('การ์ดจอหยุดทำงานชั่วคราว กำลังกู้คืน…');
-});
-canvas.addEventListener('webglcontextrestored', () => {
+}
+
+function onContextRestored() {
   $('fallback').hidden = true;
   startButton.hidden = false;
   try {
@@ -90,7 +76,50 @@ canvas.addEventListener('webglcontextrestored', () => {
     console.error(error);
     showFallback('กู้คืนกราฟิกไม่สำเร็จ ลองรีเฟรชหน้า');
   }
-});
+}
+
+function bindCanvas() {
+  canvas.addEventListener('webglcontextlost', onContextLost);
+  canvas.addEventListener('webglcontextrestored', onContextRestored);
+  canvas.addEventListener('click', () => {
+    if (started) togglePlay();
+  });
+}
+
+// WebGL2 when available; otherwise the Canvas2D renderer keeps every scene,
+// caption and the recorder working, just without shader effects.
+function initRenderer() {
+  gl = force2D ? null : canvas.getContext('webgl2', { antialias: false, alpha: false, premultipliedAlpha: false, preserveDrawingBuffer: false });
+  if (gl) {
+    try {
+      renderer = createRenderer(gl);
+      root.dataset.renderer = 'webgl2';
+    } catch (error) {
+      console.error('WebGL2 renderer failed; falling back to Canvas2D.', error);
+      // A canvas keeps its first context type, so the fallback needs a fresh element.
+      const fresh = canvas.cloneNode(false);
+      canvas.replaceWith(fresh);
+      canvas = fresh;
+      bindCanvas();
+      gl = null;
+      renderer = null;
+    }
+  }
+  if (!renderer) {
+    const ctx = canvas.getContext('2d');
+    if (!ctx) {
+      showFallback('เบราว์เซอร์นี้วาดภาพบน canvas ไม่ได้ ลองเปิดด้วย Chrome, Edge, Firefox หรือ Safari รุ่นล่าสุด');
+      return false;
+    }
+    renderer = createRenderer2D(ctx);
+    root.dataset.renderer = 'canvas2d';
+  }
+  lastSize = '';
+  dirty = true;
+  return true;
+}
+
+bindCanvas();
 
 // Normal playback renders at screen resolution; recording always uses 1920×1080.
 function renderSize() {
@@ -220,14 +249,14 @@ async function begin() {
   await Promise.race([unlocked, new Promise(resolve => setTimeout(resolve, 600))]);
   audio.setMuted(muted);
   player.play();
-  unmuteButton.hidden = audio.running;
+  unmuteButton.hidden = audio.running || !audio.available;
 }
 
 async function unlockAudio() {
   await audio.ensure();
   audio.setMuted(muted);
   if (player.playing) audio.start(player.time);
-  unmuteButton.hidden = audio.running;
+  unmuteButton.hidden = audio.running || !audio.available;
 }
 
 function togglePlay() {
@@ -276,16 +305,29 @@ function setMuted(on) {
   $('btn-mute').setAttribute('aria-label', on ? 'เปิดเสียง' : 'ปิดเสียง');
   audio.setMuted(on);
 }
+// Safari < 16.4 only has the webkit-prefixed API, and iPhone Safari has none for
+// non-video elements, so the button hides when fullscreen is unavailable.
+const fullscreenElement = () => document.fullscreenElement || document.webkitFullscreenElement || null;
+const canFullscreen = Boolean(document.fullscreenEnabled || document.webkitFullscreenEnabled);
+if (!canFullscreen) $('btn-full').hidden = true;
+if (!audio.available) $('btn-mute').hidden = true;
+
 function toggleFullscreen() {
-  if (document.fullscreenElement) document.exitFullscreen();
-  else stage.requestFullscreen?.().catch(error => console.error(error));
+  if (!canFullscreen) return;
+  if (fullscreenElement()) {
+    (document.exitFullscreen || document.webkitExitFullscreen).call(document);
+    return;
+  }
+  const request = stage.requestFullscreen || stage.webkitRequestFullscreen;
+  const result = request.call(stage);
+  if (result && typeof result.catch === 'function') result.catch(error => console.error(error));
 }
 $('btn-cc').addEventListener('click', () => setCaptions(!captionsOn));
 $('btn-mute').addEventListener('click', () => setMuted(!muted));
 $('btn-full').addEventListener('click', toggleFullscreen);
-document.addEventListener('fullscreenchange', () => {
+['fullscreenchange', 'webkitfullscreenchange'].forEach(type => document.addEventListener(type, () => {
   dirty = true;
-});
+}));
 
 const ticks = $('ticks');
 timeline.starts.slice(1).forEach((start) => {
@@ -300,10 +342,6 @@ unmuteButton.addEventListener('click', (event) => {
   event.stopPropagation();
   unlockAudio().catch(error => console.warn('Audio could not start.', error));
 });
-canvas.addEventListener('click', () => {
-  if (started) togglePlay();
-});
-
 document.addEventListener('keydown', (event) => {
   if (event.ctrlKey || event.metaKey || event.altKey) return;
   if (recording) {
@@ -433,7 +471,7 @@ async function loadFonts() {
   if (result === 'timeout') console.warn('Fonts did not load within 4s; using fallback fonts.');
 }
 
-if (initGL()) {
+if (initRenderer()) {
   setCaptions(true);
   root.classList.add('controls-on');
   loadFonts()

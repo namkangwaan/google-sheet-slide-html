@@ -85,9 +85,29 @@ export function revealText(ctx, str, x, y, p, opts = {}) {
   ctx.restore();
 }
 
+// Corner radii in the order Canvas roundRect() uses: [top-left, top-right, bottom-right, bottom-left].
+function cornerRadii(r, w, h) {
+  const list = Array.isArray(r) ? r : [r];
+  const [a, b = a, c = a, e = b] = list;
+  const radii = list.length === 3 ? [a, b, c, b] : list.length === 2 ? [a, b, a, b] : [a, b, c, e];
+  const max = Math.min(Math.abs(w), Math.abs(h)) / 2;
+  return radii.map(value => Math.min(Math.max(0, value || 0), max));
+}
+
 export function roundRect(ctx, x, y, w, h, r) {
   ctx.beginPath();
-  ctx.roundRect(x, y, w, h, r);
+  if (typeof ctx.roundRect === 'function') {
+    ctx.roundRect(x, y, w, h, r);
+    return;
+  }
+  // Safari < 16 and Firefox < 112 have no CanvasRenderingContext2D.roundRect().
+  const [tl, tr, br, bl] = cornerRadii(r, w, h);
+  ctx.moveTo(x + tl, y);
+  ctx.arcTo(x + w, y, x + w, y + h, tr);
+  ctx.arcTo(x + w, y + h, x, y + h, br);
+  ctx.arcTo(x, y + h, x, y, bl);
+  ctx.arcTo(x, y, x + w, y, tl);
+  ctx.closePath();
 }
 
 export function panel(ctx, x, y, w, h, opts = {}) {

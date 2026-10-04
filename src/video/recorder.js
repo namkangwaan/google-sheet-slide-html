@@ -1,10 +1,13 @@
 // Records the WebGL canvas plus the soundtrack with MediaRecorder.
 import { setWebmDuration } from './webm-duration.js';
 
+// Chrome/Edge take the first entry; Firefox usually lands on VP8; Safari records MP4
+// and reports codecs as full avc1/mp4a profile strings.
 const TYPES = [
   'video/webm;codecs=vp9,opus',
   'video/webm;codecs=vp8,opus',
   'video/webm',
+  'video/mp4;codecs=avc1.42E01E,mp4a.40.2',
   'video/mp4;codecs=avc1,mp4a',
   'video/mp4',
 ];
