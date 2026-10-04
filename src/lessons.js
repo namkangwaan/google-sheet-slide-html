@@ -1,5 +1,6 @@
 import answers from './practice-answers.json';
 import tasks from './practice-tasks.json';
+import { CURRICULUM } from './curriculum.js';
 
 const escapeHtml = (value) => String(value).replace(/[&<>"']/g, char => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[char]));
 const formula = (value) => `<div class="lesson-formula"><code>${escapeHtml(value)}</code><button type="button" data-copy-formula="${escapeHtml(value)}">คัดลอกสูตร</button></div>`;
@@ -38,7 +39,7 @@ export function initializeLessons() {
       ${questions([['ยังใช้ $A$1 ไม่คล่อง ควรข้ามไป QUERY ไหม?', 'กลับไปฝึกคัดลอกสูตรและตรึงตำแหน่งก่อน เพื่อแยกปัญหาการอ้างอิงออกจากคำสั่ง QUERY'], ['จำสูตรทุกชื่อไม่ได้ ถือว่ายังไม่ผ่านหรือไม่?', 'ไม่จำเป็นต้องจำทั้งหมด ให้เลือกเครื่องมือได้ ตรวจผลได้ และอธิบายเหตุผลของสูตรที่ใช้ได้']])}`),
     page('slide-3', 'สารบัญบทเรียน', 'แผนที่การเรียน', 'เลือกบทที่ต้องการ หรือใช้ปุ่มถัดไปเพื่อเรียนตามลำดับ', `
       <nav class="lesson-directory" aria-label="สารบัญบทเรียน">
-        ${[['lesson-setup','เริ่มเรียน / ดาวน์โหลดแบบฝึก'],['lesson-cells','1 · เซลล์และตารางที่ดี'],['slide-4','2 · สูตรและการอ้างอิง'],['slide-13','3 · เงื่อนไขและการสรุป'],['slide-28','4 · ค้นหาและกรอง'],['lesson-tools','5 · เครื่องมือจัดข้อมูล'],['lesson-charts','6 · กราฟและ Pivot'],['lesson-capstone','ชิ้นงานพื้นฐาน / เกณฑ์ส่ง'],['slide-6','ต่อยอด · มิติข้อมูลและ Tables'],['slide-36','ต่อยอด · QUERY และ Reshape'],['slide-51','ต่อยอด · Regex'],['slide-45','ต่อยอด · LET / LAMBDA / MAP'],['slide-48','ชิ้นงานต่อยอด'],['lesson-answers','คำใบ้และเฉลย 30 ข้อ'],['lesson-homework','การบ้าน 20 ข้อ (ครูตรวจ)'],['slide-57','ประเมินตนเองและส่งงาน']].map(([id,label])=>jump(id,label)).join('')}
+        ${CURRICULUM.map(({ id, label }) => jump(id, label)).join('')}
       </nav><p>หมายเลขแสดงตำแหน่งปัจจุบันในบทเรียน ลิงก์ประจำหัวข้อยังใช้เปิดกลับมาทบทวนได้</p>`),
     page('lesson-cells', 'เซลล์หนึ่งช่องเก็บอะไรได้บ้าง?', 'พื้นฐาน 01', 'เปิด Classroom ในไฟล์แบบฝึก หรือพิมพ์ตารางนี้ในชีตใหม่ชื่อ Classroom', `
       ${table}<p><code>C2</code> หมายถึงคอลัมน์ C แถว 2 มีค่า 10 ส่วน <code>C2:D5</code> มี 8 เซลล์ ใช้แถบสูตรด้านบนดูค่าหรือสูตรของเซลล์ที่เลือก</p>

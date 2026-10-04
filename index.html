@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script>
+    // Deck links used to live at the site root (./#lesson-setup, ./#12). Forward them to the
+    // deck before anything renders so shared links keep working. Keep this list in sync with
+    // HERO_ANCHORS in src/hero/main.js: these are the hero's own in-page anchors.
+    (function () {
+      var id = decodeURIComponent(window.location.hash.slice(1));
+      if (id && ['main', 'lessons', 'slides', 'how'].indexOf(id) < 0) {
+        window.location.replace('./slides.html' + window.location.search + window.location.hash);
+      }
+    })();
+  </script>
+  <title>Google Sheets: เรียนแล้วทำได้จริง · คอร์สเรียนด้วยตนเอง</title>
+  <meta name="description" content="คอร์ส Google Sheets ภาษาไทยสำหรับผู้เริ่มต้น เรียนด้วยตนเองจากสไลด์ ฝึกกับไฟล์แบบฝึก 30 ข้อ ตั้งแต่เซลล์และสูตร ไปจนถึง Lookup, QUERY, Regex และ LAMBDA">
+  <meta property="og:title" content="Google Sheets: เรียนแล้วทำได้จริง">
+  <meta property="og:description" content="คอร์สเรียนด้วยตนเองภาษาไทย สไลด์ + วิดีโอ + แบบฝึก 30 ข้อ">
+  <meta property="og:image" content="https://namkangwaan.github.io/google-sheet-slide-html/trailer-poster.jpg">
+  <meta property="og:type" content="website">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%23059669'/%3E%3Cpath d='M8 9h16v14H8zM8 14h16M8 18.5h16M14 9v14' fill='none' stroke='white' stroke-width='1.8'/%3E%3C/svg%3E">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@400;500;700;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="./src/hero/hero.css">
+</head>
+<body class="hero-body">
+  <a href="#main" class="skip-link">ข้ามไปเนื้อหา</a>
+
+  <header class="site-header">
+    <nav class="mx-auto flex h-16 max-w-6xl items-center justify-between gap-3 px-4" aria-label="เมนูหลัก">
+      <a href="./" class="flex items-center gap-2.5 font-bold text-slate-100">
+        <span class="logo-mark" aria-hidden="true">
+          <svg viewBox="0 0 24 24"><path d="M4 5h16v14H4zM4 9.5h16M4 14h16M9.5 5v14" fill="none" stroke="currentColor" stroke-width="1.8"/></svg>
+        </span>
+        <span class="leading-tight">Google Sheets<span class="hidden sm:inline"> Mastery</span></span>
+      </a>
+      <div class="flex items-center gap-1">
+        <a href="#lessons" class="nav-link hidden md:inline-flex">บทเรียน</a>
+        <a href="#slides" class="nav-link hidden md:inline-flex">ดูสไลด์</a>
+        <a href="./video.html" class="nav-link hidden md:inline-flex">วิดีโอ</a>
+        <a href="./slides.html#lesson-setup" class="btn btn-primary btn-sm">เริ่มเรียน</a>
+      </div>
+    </nav>
+  </header>
+
+  <main id="main">
+    <section class="hero" aria-labelledby="hero-title">
+      <div class="hero-grid" aria-hidden="true"></div>
+      <div class="relative mx-auto grid max-w-6xl items-center gap-10 px-4 py-12 md:py-20 lg:grid-cols-[1fr_1.12fr]">
+        <div>
+          <p class="eyebrow">คอร์สเรียนด้วยตนเอง · ภาษาไทย · ฟรี</p>
+          <h1 id="hero-title" class="mt-5 text-4xl font-extrabold leading-[1.15] text-slate-50 sm:text-5xl md:text-6xl">
+            Google Sheets<br><span class="text-emerald-400">เรียนแล้วทำได้จริง</span>
+          </h1>
+          <p class="mt-5 max-w-xl text-lg leading-relaxed text-slate-300">
+            จากตารางแรก สู่การคำนวณ ค้นหา และอธิบายข้อมูล เปิดสไลด์หนึ่งแท็บ แล้วลงมือทำในชีตของตัวเองอีกหนึ่งแท็บ
+          </p>
+          <div class="mt-8 flex flex-wrap gap-3">
+            <a href="./slides.html#lesson-setup" class="btn btn-primary">เริ่มเรียนจากสไลด์ <span aria-hidden="true">→</span></a>
+            <a href="./Google_Sheets_Mastery_Practice.xlsx" download class="btn btn-ghost">ดาวน์โหลดไฟล์แบบฝึก (.xlsx)</a>
+          </div>
+          <dl class="stats mt-10">
+            <div><dt>หัวข้อ</dt><dd data-stat="topics">–</dd></div>
+            <div><dt>แบบฝึก</dt><dd data-stat="tasks">–</dd></div>
+            <div><dt>การบ้าน</dt><dd>20</dd></div>
+          </dl>
+        </div>
+
+        <div class="video-card" id="video-card">
+          <button type="button" class="poster" id="play-trailer" aria-label="เล่นวิดีโอแนะนำคอร์ส ความยาว 3 นาที">
+            <img src="./trailer-poster.jpg" alt="" width="1280" height="720" fetchpriority="high">
+            <span class="play-badge" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></span>
+            <span class="poster-label">ดูวิดีโอแนะนำคอร์ส · 3 นาที</span>
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <section id="lessons" class="section" aria-labelledby="lessons-title">
+      <div class="mx-auto max-w-6xl px-4">
+        <p class="section-kicker">หลักสูตร</p>
+        <h2 id="lessons-title" class="section-title">นักเรียนจะได้เรียนอะไร</h2>
+        <p class="section-lead">เรียนทีละบทตามเส้นทาง แต่ละบทมีกิจกรรมลงมือทำและคำถามเช็กความเข้าใจ กดการ์ดเพื่อเปิดสไลด์ของบทนั้น</p>
+        <div id="tracks" class="mt-10 grid gap-10"></div>
+      </div>
+    </section>
+
+    <section id="slides" class="section section-alt" aria-labelledby="slides-title">
+      <div class="mx-auto max-w-6xl px-4">
+        <p class="section-kicker">ทดลองดู</p>
+        <h2 id="slides-title" class="section-title">ดูสไลด์บนหน้าเว็บ</h2>
+        <p class="section-lead">คลิกในกรอบแล้วใช้ปุ่มลูกศร หรือปัดบนจอสัมผัสเพื่อเปลี่ยนหน้า กด G เพื่อดูภาพรวมทุกหน้า</p>
+        <div class="slide-frame mt-8">
+          <iframe src="./slides.html" title="สไลด์บทเรียน Google Sheets" loading="lazy" allow="fullscreen; clipboard-write"></iframe>
+        </div>
+        <div class="mt-5 flex flex-wrap gap-3">
+          <a href="./slides.html" class="btn btn-primary">เปิดสไลด์เต็มหน้าจอ</a>
+          <a href="./slides.html#slide-3" class="btn btn-ghost">ไปที่สารบัญ</a>
+        </div>
+      </div>
+    </section>
+
+    <section id="how" class="section" aria-labelledby="how-title">
+      <div class="mx-auto max-w-6xl px-4">
+        <p class="section-kicker">วิธีเรียน</p>
+        <h2 id="how-title" class="section-title">เรียนได้ด้วยตัวเองใน 3 ขั้น</h2>
+        <ol class="steps mt-10">
+          <li>
+            <span class="step-no">1</span>
+            <h3>ดาวน์โหลดไฟล์แบบฝึก</h3>
+            <p>อัปโหลดเข้า Google Drive แล้วเปิดด้วย Google Sheets เป็นสำเนาของตัวเอง</p>
+          </li>
+          <li>
+            <span class="step-no">2</span>
+            <h3>เปิดสไลด์คู่กับชีต</h3>
+            <p>อ่านทีละหน้า ทายผลก่อนวางสูตร แล้วลงมือทำในช่องสีเขียวของไฟล์</p>
+          </li>
+          <li>
+            <span class="step-no">3</span>
+            <h3>ตรวจคำตอบเอง</h3>
+            <p>คอลัมน์ Self_Check ในไฟล์บอกทันทีว่าข้อไหนถูก แล้วค่อยเปิดเฉลยพร้อมเหตุผล</p>
+          </li>
+        </ol>
+        <div class="cta-band mt-14">
+          <div>
+            <h3 class="text-2xl font-bold text-slate-50">พร้อมเริ่มแล้วใช่ไหม</h3>
+            <p class="mt-1 text-slate-300">เริ่มที่บทเตรียมพื้นที่ฝึก ใช้เวลาประมาณ 10 นาที</p>
+          </div>
+          <a href="./slides.html#lesson-setup" class="btn btn-primary">เริ่มเรียนบทแรก <span aria-hidden="true">→</span></a>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-3 px-4 py-8 text-sm text-slate-400">
+      <p>เนื้อหาเผยแพร่ภายใต้ <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.th" rel="license noreferrer" target="_blank">CC BY-NC-SA 4.0</a></p>
+      <p class="flex gap-4">
+        <a href="./slides.html">สไลด์</a>
+        <a href="./video.html">วิดีโอ</a>
+        <a href="https://github.com/namkangwaan/google-sheet-slide-html" target="_blank" rel="noreferrer">GitHub</a>
+      </p>
+    </div>
+  </footer>
+
+  <script type="module" src="./src/hero/main.js"></script>
+</body>
+</html>
