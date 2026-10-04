@@ -26,7 +26,9 @@ Three Vite entries (`vite.config.js`):
 
 - `index.html` is the hero/landing page (`src/hero/`). An inline script in its `<head>` forwards old deck links (`./#lesson-setup`, `./#12`) to `./slides.html#...`, except the hero's own anchors listed there and in `HERO_ANCHORS` in `src/hero/main.js`. Add new hero section ids to both lists.
 - `slides.html` is the deck (below).
-- `video.html` is the WebGL trailer (`src/video/`); `?embed=1&autoplay=1` is how the hero embeds it. `pnpm check:video` asserts every number the trailer shows against the workbook. `public/trailer-poster.jpg` is a captured frame of the intro (about 5 s in); recapture it if the intro changes.
+- `video.html` is the WebGL trailer (`src/video/`); `?embed=1&autoplay=1` is how the hero embeds it. `pnpm check:video` asserts every number the trailer shows against the workbook. `public/trailer-poster.jpg` is a captured frame of the intro (about 5 s in); recapture it if the intro changes. Without WebGL2 (or if a shader fails) the player falls back to `renderer2d.js` (Canvas2D: same scenes, captions and recording, no shader effects); `?renderer=2d` forces it for testing.
+
+Browser support follows `browserslist` in `package.json` (Vite's default target: Chrome 87, Firefox 78, Safari 14). Autoprefixer uses it, so a prefix such as `:-webkit-full-screen` survives the build only while that list includes a browser that needs it. Feature-detect newer Canvas/Web APIs (see `roundRect()` in `draw.js`, `AudioContextClass` in `audio.js`) instead of assuming them.
 
 `src/curriculum.js` is the course map used by both the deck's table of contents (slide-3) and the hero's lesson cards.
 
