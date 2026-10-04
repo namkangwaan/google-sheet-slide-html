@@ -37,6 +37,9 @@ jobs:
       # Structure only in CI: the teacher answer key is gitignored and never reaches the runner.
       - run: pnpm check:homework
 
+      # Block the deploy if numbers in the video trailer drift from the workbook.
+      - run: pnpm check:video
+
       - run: pnpm build
 
       - uses: actions/configure-pages@v5

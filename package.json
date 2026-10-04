@@ -13,7 +13,8 @@
     "practice:build": "node generate-excel.cjs",
     "check:practice": "node scripts/verify-practice.cjs",
     "homework:build": "node generate-homework.cjs",
-    "check:homework": "node scripts/verify-homework.cjs"
+    "check:homework": "node scripts/verify-homework.cjs",
+    "check:video": "node scripts/verify-video.mjs"
   },
   "devDependencies": {
     "autoprefixer": "^10.4.19",
