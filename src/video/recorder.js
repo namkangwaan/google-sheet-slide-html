@@ -1,4 +1,5 @@
 // Records the WebGL canvas plus the soundtrack with MediaRecorder.
+import { setWebmDuration } from './webm-duration.js';
 
 const TYPES = [
   'video/webm;codecs=vp9,opus',
@@ -21,6 +22,9 @@ export function createRecording({ canvas, audioStream, mimeType, fps = 60 }) {
   const stream = new MediaStream([...video.getVideoTracks(), ...(audioStream ? audioStream.getAudioTracks() : [])]);
   const recorder = new MediaRecorder(stream, { mimeType, videoBitsPerSecond: 16_000_000, audioBitsPerSecond: 192_000 });
   const chunks = [];
+  // Active time excludes pauses (tab hidden), matching what the file contains.
+  let activeMs = 0;
+  let resumedAt = 0;
   recorder.addEventListener('dataavailable', event => {
     if (event.data.size > 0) chunks.push(event.data);
   });
@@ -28,23 +32,44 @@ export function createRecording({ canvas, audioStream, mimeType, fps = 60 }) {
   return {
     start() {
       recorder.start(1000);
+      resumedAt = performance.now();
     },
     pause() {
-      if (recorder.state === 'recording') recorder.pause();
+      if (recorder.state !== 'recording') return;
+      recorder.pause();
+      activeMs += performance.now() - resumedAt;
     },
     resume() {
-      if (recorder.state === 'paused') recorder.resume();
+      if (recorder.state !== 'paused') return;
+      recorder.resume();
+      resumedAt = performance.now();
     },
     stop() {
       return new Promise((resolve, reject) => {
-        recorder.addEventListener('stop', () => {
+        recorder.addEventListener('stop', async () => {
           // Only the canvas track belongs to this recording; the audio destination is reused.
           video.getVideoTracks().forEach(track => track.stop());
-          resolve(new Blob(chunks, { type: mimeType.split(';')[0] }));
+          const type = mimeType.split(';')[0];
+          const blob = new Blob(chunks, { type });
+          if (type !== 'video/webm') {
+            resolve(blob);
+            return;
+          }
+          try {
+            resolve(new Blob([setWebmDuration(await blob.arrayBuffer(), activeMs)], { type }));
+          } catch (error) {
+            // The file still plays; players just cannot seek it.
+            console.warn('Could not write WebM duration; saving the file without it.', error);
+            resolve(blob);
+          }
         }, { once: true });
         recorder.addEventListener('error', event => reject(event.error ?? new Error('MediaRecorder error')), { once: true });
-        if (recorder.state === 'inactive') reject(new Error('Recorder is not running'));
-        else recorder.stop();
+        if (recorder.state === 'inactive') {
+          reject(new Error('Recorder is not running'));
+          return;
+        }
+        if (recorder.state === 'recording') activeMs += performance.now() - resumedAt;
+        recorder.stop();
       });
     },
   };

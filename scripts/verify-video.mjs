@@ -11,6 +11,7 @@ import {
   extractDomain, maskPhone,
 } from '../src/video/data.js';
 import { buildTimeline, locate, TRANSITION } from '../src/video/timeline.js';
+import { setWebmDuration, getWebmDuration } from '../src/video/webm-duration.js';
 
 const root = new URL('../', import.meta.url);
 const tasks = JSON.parse(readFileSync(new URL('src/practice-tasks.json', root), 'utf8'));
@@ -132,6 +133,35 @@ check('locate() blends scenes symmetrically around each boundary', () => {
 check('No transition is attached to the first start or the end', () => {
   assert.equal(locate(timeline, 0.1).next, null);
   assert.equal(locate(timeline, timeline.total - 0.1).next, null);
+});
+
+// Minimal WebM shaped like Chrome's MediaRecorder output: unknown-size Segment and
+// Cluster, an Info element with TimecodeScale but no Duration.
+const webm = Uint8Array.from([
+  0x1a, 0x45, 0xdf, 0xa3, 0x84, 0x42, 0x86, 0x81, 0x01,
+  0x18, 0x53, 0x80, 0x67, 0x01, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff,
+  0x15, 0x49, 0xa9, 0x66, 0x40, 0x0c,
+  0x2a, 0xd7, 0xb1, 0x83, 0x0f, 0x42, 0x40,
+  0x4d, 0x80, 0x82, 0x43, 0x68,
+  0x1f, 0x43, 0xb6, 0x75, 0x01, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xe7, 0x81, 0x00,
+]);
+
+check('setWebmDuration() adds a seekable duration to recorder output', () => {
+  assert.equal(getWebmDuration(webm), null);
+  const fixed = setWebmDuration(webm, 180000);
+  assert.equal(fixed.length, webm.length + 11);
+  close(getWebmDuration(fixed), 180000);
+  // Info size grew by the new element; the cluster after it is untouched.
+  assert.deepEqual([...fixed.subarray(25, 27)], [0x40, 0x17]);
+  assert.deepEqual([...fixed.subarray(-14)], [...webm.subarray(-14)]);
+  // Running it again overwrites instead of adding a second Duration.
+  const again = setWebmDuration(fixed, 90500);
+  assert.equal(again.length, fixed.length);
+  close(getWebmDuration(again), 90500);
+});
+
+check('setWebmDuration() rejects bytes that are not WebM', () => {
+  assert.throws(() => setWebmDuration(Uint8Array.from([0x1a, 0x45, 0xdf, 0xa3, 0x80, 0x1f, 0x43, 0xb6, 0x75, 0x80]), 1000));
 });
 
 console.log(`✓ check:video passed ${checks} checks (data recomputed in JS; formulas are not run in Google Sheets)`);

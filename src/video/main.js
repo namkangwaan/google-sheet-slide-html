@@ -212,6 +212,8 @@ async function begin() {
 }
 
 function togglePlay() {
+  // Pausing mid-recording would freeze the file while MediaRecorder keeps writing.
+  if (recording) return;
   if (!started || !player.playing) begin().catch(error => console.error(error));
   else player.pause();
 }
