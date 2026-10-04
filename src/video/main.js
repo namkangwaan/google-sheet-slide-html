@@ -19,6 +19,14 @@ const sceneLabel = $('scene-label');
 const recordButton = $('btn-record');
 const recBadge = $('rec-badge');
 const recText = $('rec-text');
+const unmuteButton = $('unmute');
+const params = new URLSearchParams(window.location.search);
+const embedded = params.get('embed') === '1';
+if (embedded) {
+  root.classList.add('embed');
+  // Inside the hero iframe, links must replace the whole page, not the frame.
+  document.querySelectorAll('a').forEach(link => link.setAttribute('target', '_top'));
+}
 
 const timeline = buildTimeline(SCENES);
 const player = createPlayer(timeline.total);
@@ -200,15 +208,26 @@ function sceneStep(direction) {
   player.seek(timeline.starts[target] + (target === 0 ? 0 : 0.4));
 }
 
+// Browsers may hold audio until a direct tap (e.g. autoplay inside the hero iframe).
+// Never let that block the picture: wait briefly, then play and offer an unmute button.
 async function begin() {
   if (!started) {
     started = true;
     root.classList.add('started');
     player.seek(0);
   }
-  await audio.ensure();
+  const unlocked = audio.ensure().catch(error => console.warn('Audio could not start.', error));
+  await Promise.race([unlocked, new Promise(resolve => setTimeout(resolve, 600))]);
   audio.setMuted(muted);
   player.play();
+  unmuteButton.hidden = audio.running;
+}
+
+async function unlockAudio() {
+  await audio.ensure();
+  audio.setMuted(muted);
+  if (player.playing) audio.start(player.time);
+  unmuteButton.hidden = audio.running;
 }
 
 function togglePlay() {
@@ -277,6 +296,10 @@ timeline.starts.slice(1).forEach((start) => {
 
 stage.addEventListener('pointermove', showControls);
 stage.addEventListener('pointerdown', showControls);
+unmuteButton.addEventListener('click', (event) => {
+  event.stopPropagation();
+  unlockAudio().catch(error => console.warn('Audio could not start.', error));
+});
 canvas.addEventListener('click', () => {
   if (started) togglePlay();
 });
@@ -420,5 +443,6 @@ if (initGL()) {
       $('start-label').textContent = 'เล่นวิดีโอ (3 นาที)';
       dirty = true;
       requestAnimationFrame(loop);
+      if (params.get('autoplay') === '1') begin().catch(error => console.error(error));
     });
 }

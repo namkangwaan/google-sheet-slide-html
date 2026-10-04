@@ -224,23 +224,51 @@ html, body {
 .vp-stage:fullscreen .vp-caption { font-size: max(16px, 1.8vw); }
 .vp-stage:fullscreen canvas { object-fit: contain; }
 
-/* Phones: the stage is too small to overlay controls, so they sit below it. */
+/* Phones: the stage is too small to overlay controls, so they sit below it.
+   The embedded player (hero page iframe) keeps the overlay layout. */
 @media (max-width: 720px) {
-  .vp { justify-content: flex-start; padding: 16px; }
-  .vp-stage { width: 100%; overflow: visible; aspect-ratio: auto; border-radius: 10px; background: transparent; box-shadow: none; }
-  .vp-stage canvas { position: relative; aspect-ratio: 16 / 9; height: auto; border-radius: 10px; }
-  .vp-caption { position: static; transform: none; max-width: none; width: auto; margin-top: 8px; font-size: 15px; }
-  .vp.controls-on .vp-caption { bottom: auto; }
-  .vp-start { position: absolute; inset: 0; top: 0; bottom: auto; height: max-content; margin: calc(28vw - 38px) auto 0; padding: 8px 18px 8px 8px; gap: 10px; font-size: 15px; }
-  .vp-start-icon { width: 36px; height: 36px; }
-  .vp-start-icon svg { width: 20px; }
-  .vp-controls, .vp.controls-on .vp-controls { position: static; opacity: 1; transform: none; pointer-events: auto; padding: 8px 0 0; background: none; }
-  .vp-bar { flex-wrap: wrap; }
-  .vp-scene { order: 10; flex-basis: 100%; margin: 2px 0 0 4px; }
-  .vp-keys { display: none; }
+  .vp:not(.embed) { justify-content: flex-start; padding: 16px; }
+  .vp:not(.embed) .vp-stage { width: 100%; overflow: visible; aspect-ratio: auto; border-radius: 10px; background: transparent; box-shadow: none; }
+  .vp:not(.embed) .vp-stage canvas { position: relative; aspect-ratio: 16 / 9; height: auto; border-radius: 10px; }
+  .vp:not(.embed) .vp-caption { position: static; transform: none; max-width: none; width: auto; margin-top: 8px; font-size: 15px; }
+  .vp:not(.embed).controls-on .vp-caption { bottom: auto; }
+  .vp:not(.embed) .vp-start { position: absolute; inset: 0; top: 0; bottom: auto; height: max-content; margin: calc(28vw - 38px) auto 0; padding: 8px 18px 8px 8px; gap: 10px; font-size: 15px; }
+  .vp:not(.embed) .vp-start-icon { width: 36px; height: 36px; }
+  .vp:not(.embed) .vp-start-icon svg { width: 20px; }
+  .vp:not(.embed) .vp-controls, .vp:not(.embed).controls-on .vp-controls { position: static; opacity: 1; transform: none; pointer-events: auto; padding: 8px 0 0; background: none; }
+  .vp:not(.embed) .vp-bar { flex-wrap: wrap; }
+  .vp:not(.embed) .vp-scene { order: 10; flex-basis: 100%; margin: 2px 0 0 4px; }
+  .vp:not(.embed) .vp-keys { display: none; }
 }
 
 @media (prefers-reduced-motion: reduce) {
   .vp-controls, .vp-caption, .vp-start { transition: none; }
   .vp-rec .vp-rec-dot { animation: none; }
 }
+
+/* ?embed=1: fills a 16:9 iframe on the hero page. */
+.vp.embed { min-height: 100vh; padding: 0; gap: 0; }
+.vp.embed .vp-stage { width: min(100vw, calc(100vh * 16 / 9)); border-radius: 0; box-shadow: none; }
+.vp.embed .vp-keys { display: none; }
+@media (max-width: 720px) {
+  .vp.embed .vp-bar { gap: 0; }
+  .vp.embed .vp-btn { min-width: 34px; height: 34px; padding: 0 4px; }
+  .vp.embed .vp-scene, .vp.embed .vp-btn-rec, .vp.embed .vp-back { display: none; }
+  .vp.embed .vp-time { font-size: 12px; }
+  .vp.embed .vp-start { padding: 8px 16px 8px 8px; font-size: 14px; }
+  .vp.embed .vp-start-icon { width: 34px; height: 34px; }
+}
+
+.vp-unmute {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  padding: 6px 14px;
+  border: 1px solid rgba(16, 185, 129, 0.55);
+  border-radius: 999px;
+  background: rgba(2, 6, 23, 0.8);
+  color: var(--text);
+  font: 600 14px 'Noto Sans Thai', sans-serif;
+  cursor: pointer;
+}
+.vp-unmute[hidden] { display: none; }

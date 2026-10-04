@@ -281,6 +281,9 @@ export function createAudio(timeline) {
     setMuted(muted) {
       if (ctx) speaker.gain.setTargetAtTime(muted ? 0 : 1, ctx.currentTime, 0.03);
     },
+    get running() {
+      return ctx?.state === 'running';
+    },
     recordStream() {
       return recordDestination?.stream ?? null;
     },
