@@ -106,7 +106,9 @@ vec3 background(vec2 uv) {
       }
     }
 
-    vec3 floorCol = uAccent * (line * 0.55 * detail + lit * 0.16 + glyph * lit * 1.1 * detail);
+    // Keep big near-camera digits from competing with the content.
+    float nearFade = smoothstep(4.0, 11.0, dist);
+    vec3 floorCol = uAccent * (line * 0.55 * detail + (lit * 0.12 + glyph * lit * 0.6 * detail) * nearFade);
     floorCol += vec3(0.02, 0.05, 0.08) * line * detail;
     col = mix(col, col + floorCol, fog);
   }
@@ -127,14 +129,14 @@ void main() {
     float m = clamp(uMix, 0.0, 1.0);
     float k = sin(3.14159265 * m);
     vec2 c = uv - 0.5;
-    vec2 warped = uv + c * dot(c, c) * 0.35 * k * (1.0 - uReduced);
+    vec2 warped = uv + c * dot(c, c) * 0.22 * k * (1.0 - uReduced);
     vec4 a = texture(uLayerA, warped);
     vec4 b = texture(uLayerB, warped);
-    float n = fbm(uv * vec2(uRes.x / uRes.y, 1.0) * 3.0 + 1.7);
-    float reveal = mix(smoothstep(n - 0.05, n + 0.05, m * 1.25 - 0.12), m, uReduced);
+    float n = fbm(uv * vec2(uRes.x / uRes.y, 1.0) * 5.0 + 1.7);
+    float reveal = mix(smoothstep(n - 0.03, n + 0.03, m * 1.25 - 0.12), m, uReduced);
     layer = mix(a, b, reveal);
     float band = (1.0 - abs(reveal * 2.0 - 1.0)) * (1.0 - uReduced);
-    edgeGlow = uAccent * band * band * 1.6;
+    edgeGlow = uAccent * band * band * band * 0.7;
   } else {
     layer = texture(uLayerA, uv);
   }
@@ -259,7 +261,7 @@ export function createRenderer(gl) {
     gl.uniform1f(c.uTime, frame.time);
     gl.uniform1f(c.uFade, frame.fade);
     const swirl = frame.canvasB ? Math.sin(Math.PI * Math.min(Math.max(frame.mix, 0), 1)) : 0;
-    gl.uniform1f(c.uAberration, frame.reduced ? 0 : 0.0025 + swirl * 0.014);
+    gl.uniform1f(c.uAberration, frame.reduced ? 0 : 0.002 + swirl * 0.005);
     gl.uniform1f(c.uGrain, frame.reduced ? 0 : 0.045);
     gl.uniform1f(c.uBloomStrength, 0.55);
     gl.uniform2f(c.uRes, width, height);
